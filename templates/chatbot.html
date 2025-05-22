@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitGen - AI Fitness & Diet Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+    <style>
+        /* Chatbot specific styles */
+        .chatbot-container {
+            max-width: 1200px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .chatbot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        
+        .chatbot-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .chatbot-title h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 24px;
+        }
+        
+        .chatbot-title h1::after {
+            display: none;
+        }
+        
+        .chatbot-icon {
+            font-size: 30px;
+            color: var(--primary-color);
+        }
+        
+        .chatbot-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            border: none;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(45deg, var(--primary-color), #ff7043);
+            color: white;
+        }
+        
+        .secondary-btn {
+            background: linear-gradient(45deg, var(--secondary-color), #64b5f6);
+            color: white;
+        }
+        
+        .danger-btn {
+            background: linear-gradient(45deg, #f44336, #e57373);
+            color: white;
+        }
+        
+        .neutral-btn {
+            background: linear-gradient(45deg, #9e9e9e, #bdbdbd);
+            color: white;
+        }
+        
+        /* Chatbot layout */
+        .chatbot-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* Sidebar */
+        .chatbot-sidebar {
+            width: 250px;
+            background-color: #f5f5f5;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .category-selector {
+            margin-bottom: 20px;
+        }
+        
+        .category-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+        
+        .category-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .category-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-option:hover, .category-option.active {
+            background-color: rgba(255, 87, 34, 0.1);
+        }
+        
+        .category-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .category-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .category-fitness .category-icon {
+            color: #f44336;
+        }
+        
+        .category-diet .category-icon {
+            color: #4caf50;
+        }
+        
+        .category-wellness .category-icon {
+            color: #2196f3;
+        }
+        
+        .category-progress .category-icon {
+            color: #ff9800;
+        }
+        
+        .sidebar-info {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .sidebar-info p {
+            margin: 5px 0;
+        }
+        
+        /* Chat area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .message-user {
+            align-self: flex-end;
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message-assistant {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+            color: var(--dark-color);
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        .message-typing {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+            color: var(--dark-color);
+            border-bottom-left-radius: 5px;
+            display: none;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #999;
+            border-radius: 50%;
+            animation: typingAnimation 1.5s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typingAnimation {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .chat-input {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .chat-input-field {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input-field:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
+        }
+        
+        .chat-send-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-send-btn:hover {
+            background-color: #e64a19;
+            transform: scale(1.05);
+        }
+        
+        .chat-send-btn:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Welcome message */
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .welcome-icon {
+            font-size: 60px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .welcome-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .welcome-description {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .welcome-categories {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .welcome-category {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 120px;
+        }
+        
+        .welcome-category:hover {
+            background-color: rgba(255, 87, 34, 0.1);
+            transform: translateY(-5px);
+        }
+        
+        .welcome-category-icon {
+            font-size: 30px;
+        }
+        
+        .welcome-category-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .chatbot-sidebar {
+                width: 200px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .chatbot-content {
+                flex-direction: column;
+            }
+            
+            .chatbot-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                padding: 10px 20px;
+            }
+            
+            .category-options {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .category-option {
+                flex: 1;
+                min-width: 100px;
+            }
+            
+            .sidebar-info {
+                display: none;
+            }
+            
+            .chat-area {
+                flex: 1;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container chatbot-container">
+        <!-- Chatbot Header -->
+        <div class="chatbot-header">
+            <div class="chatbot-title">
+                <div class="chatbot-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h1>FitGen AI Assistant</h1>
+                </div>
+            </div>
+            
+            <div class="chatbot-actions">
+                <button type="button" id="clearChatBtn" class="action-btn danger-btn">
+                    <i class="fas fa-trash"></i> Clear Chat
+                </button>
+                <a href="{{ url_for('auth.user_dashboard') }}" class="action-btn secondary-btn">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <button type="button" id="logoutBtn" class="action-btn neutral-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+        
+        <!-- Chatbot Content -->
+        <div class="chatbot-content">
+            <!-- Sidebar -->
+            <div class="chatbot-sidebar">
+                <div class="category-selector">
+                    <div class="category-title">Chat Categories</div>
+                    <div class="category-options">
+                        <div class="category-option category-fitness active" data-category="fitness">
+                            <span class="category-icon"><i class="fas fa-dumbbell"></i></span>
+                            <span class="category-label">Fitness</span>
+                        </div>
+                        <div class="category-option category-diet" data-category="diet">
+                            <span class="category-icon"><i class="fas fa-utensils"></i></span>
+                            <span class="category-label">Diet</span>
+                        </div>
+                        <div class="category-option category-wellness" data-category="wellness">
+                            <span class="category-icon"><i class="fas fa-spa"></i></span>
+                            <span class="category-label">Wellness</span>
+                        </div>
+                        <div class="category-option category-progress" data-category="progress">
+                            <span class="category-icon"><i class="fas fa-chart-line"></i></span>
+                            <span class="category-label">Progress</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-info">
+                    <p><strong>Fitness:</strong> Ask about workouts, exercises, and training plans.</p>
+                    <p><strong>Diet:</strong> Get meal suggestions, nutrition advice, and diet tips.</p>
+                    <p><strong>Wellness:</strong> Learn about mental health, stress management, and sleep.</p>
+                    <p><strong>Progress:</strong> Track your fitness journey and analyze your progress.</p>
+                </div>
+            </div>
+            
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Welcome message will be shown initially -->
+                    <div class="welcome-message" id="welcomeMessage">
+                        <div class="welcome-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h2 class="welcome-title">Welcome to FitGen AI Assistant!</h2>
+                        <p class="welcome-description">
+                            I'm here to help you with your fitness journey. Choose a category below to get started or type your question in the chat box.
+                        </p>
+                        <div class="welcome-categories">
+                            <div class="welcome-category" data-category="fitness">
+                                <div class="welcome-category-icon" style="color: #f44336;">
+                                    <i class="fas fa-dumbbell"></i>
+                                </div>
+                                <div class="welcome-category-label">Fitness</div>
+                            </div>
+                            <div class="welcome-category" data-category="diet">
+                                <div class="welcome-category-icon" style="color: #4caf50;">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                                <div class="welcome-category-label">Diet</div>
+                            </div>
+                            <div class="welcome-category" data-category="wellness">
+                                <div class="welcome-category-icon" style="color: #2196f3;">
+                                    <i class="fas fa-spa"></i>
+                                </div>
+                                <div class="welcome-category-label">Wellness</div>
+                            </div>
+                            <div class="welcome-category" data-category="progress">
+                                <div class="welcome-category-icon" style="color: #ff9800;">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="welcome-category-label">Progress</div>
+                            </div>
+                        </div>
+                        <p>
+                            <strong>Tip:</strong> In the Progress category, you can track your fitness data by typing messages like:<br>
+                            "Weight: 75 kg" or "Steps: 10000" or "Sleep: 7.5 hours"
+                        </p>
+                    </div>
+                    
+                    <!-- Messages will be added here dynamically -->
+                    
+                    <!-- Typing indicator -->
+                    <div class="message message-typing" id="typingIndicator">
+                        <div class="typing-indicator">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="messageInput" class="chat-input-field" placeholder="Type your message here..." autocomplete="off">
+                    <button type="button" id="sendMessageBtn" class="chat-send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+        }
+        
+        // DOM Elements
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const clearChatBtn = document.getElementById('clearChatBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const categoryOptions = document.querySelectorAll('.category-option');
+        const welcomeCategories = document.querySelectorAll('.welcome-category');
+        
+        // Current category
+        let currentCategory = 'fitness';
+        
+        // Function to format time
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        // Function to add a message to the chat
+        function addMessage(content, role, timestamp = new Date()) {
+            // Hide welcome message if visible
+            if (welcomeMessage.style.display !== 'none') {
+                welcomeMessage.style.display = 'none';
+            }
+            
+            // Create message element
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `message-${role}`);
+            
+            // Create message content
+            const contentElement = document.createElement('div');
+            contentElement.classList.add('message-content');
+            contentElement.innerHTML = content.replace(/\n/g, '<br>');
+            
+            // Create message time
+            const timeElement = document.createElement('div');
+            timeElement.classList.add('message-time');
+            timeElement.textContent = formatTime(timestamp);
+            
+            // Append elements
+            messageElement.appendChild(contentElement);
+            messageElement.appendChild(timeElement);
+            
+            // Add message to chat
+            chatMessages.insertBefore(messageElement, typingIndicator);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Function to show typing indicator
+        function showTypingIndicator() {
+            typingIndicator.style.display = 'block';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Function to hide typing indicator
+        function hideTypingIndicator() {
+            typingIndicator.style.display = 'none';
+        }
+        
+        // Function to send a message
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Add user message to chat
+            addMessage(message, 'user');
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            try {
+                // Send message to server
+                const response = await fetch('/api/chatbot/message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        category: currentCategory
+                    })
+                });
+                
+                // Hide typing indicator
+                hideTypingIndicator();
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Add assistant message to chat
+                    addMessage(data.response, 'assistant');
+                } else {
+                    const error = await response.json();
+                    addMessage(`Error: ${error.error || 'Something went wrong'}`, 'assistant');
+                }
+            } catch (error) {
+                // Hide typing indicator
+                hideTypingIndicator();
+                
+                console.error('Error:', error);
+                addMessage('Sorry, there was an error processing your request. Please try again.', 'assistant');
+            }
+        }
+        
+        // Function to load chat history
+        async function loadChatHistory() {
+            try {
+                const response = await fetch(`/api/chatbot/history?category=${currentCategory}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Clear chat messages (except typing indicator)
+                    while (chatMessages.firstChild && chatMessages.firstChild !== typingIndicator) {
+                        chatMessages.removeChild(chatMessages.firstChild);
+                    }
+                    
+                    // Hide welcome message if there are messages
+                    if (data.messages.length > 0) {
+                        welcomeMessage.style.display = 'none';
+                    } else {
+                        welcomeMessage.style.display = 'block';
+                    }
+                    
+                    // Add messages to chat
+                    data.messages.forEach(message => {
+                        addMessage(message.content, message.role, new Date(message.timestamp));
+                    });
+                } else {
+                    console.error('Failed to load chat history');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Function to clear chat history
+        async function clearChatHistory() {
+            if (!confirm('Are you sure you want to clear the chat history for this category?')) return;
+            
+            try {
+                const response = await fetch('/api/chatbot/clear-history', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        category: currentCategory
+                    })
+                });
+                
+                if (response.ok) {
+                    // Reload chat history
+                    loadChatHistory();
+                } else {
+                    console.error('Failed to clear chat history');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Function to change category
+        function changeCategory(category) {
+            // Update current category
+            currentCategory = category;
+            
+            // Update active category
+            categoryOptions.forEach(option => {
+                if (option.dataset.category === category) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            
+            // Load chat history for the new category
+            loadChatHistory();
+        }
+        
+        // Event Listeners
+        sendMessageBtn.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        clearChatBtn.addEventListener('click', clearChatHistory);
+        
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        });
+        
+        // Category selection
+        categoryOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                changeCategory(option.dataset.category);
+            });
+        });
+        
+        // Welcome category selection
+        welcomeCategories.forEach(category => {
+            category.addEventListener('click', () => {
+                changeCategory(category.dataset.category);
+                
+                // Add a sample message based on the category
+                let sampleMessage = '';
+                switch (category.dataset.category) {
+                    case 'fitness':
+                        sampleMessage = 'Can you suggest a workout routine for beginners?';
+                        break;
+                    case 'diet':
+                        sampleMessage = 'What are some healthy breakfast ideas?';
+                        break;
+                    case 'wellness':
+                        sampleMessage = 'How can I reduce stress after work?';
+                        break;
+                    case 'progress':
+                        sampleMessage = 'How do I track my weight and steps?';
+                        break;
+                }
+                
+                // Set the input value
+                messageInput.value = sampleMessage;
+                
+                // Focus the input
+                messageInput.focus();
+            });
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load chat history
+            loadChatHistory();
+            
+            // Focus the input
+            messageInput.focus();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitGen - Notifications</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+    <style>
+        /* Notifications specific styles */
+        .notifications-container {
+            max-width: 1200px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .notifications-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+        
+        .notifications-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .notifications-title h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 24px;
+        }
+        
+        .notifications-title h1::after {
+            display: none;
+        }
+        
+        .notifications-icon {
+            font-size: 30px;
+            color: var(--primary-color);
+        }
+        
+        .notifications-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            border: none;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(45deg, var(--primary-color), #ff7043);
+            color: white;
+        }
+        
+        .secondary-btn {
+            background: linear-gradient(45deg, var(--secondary-color), #64b5f6);
+            color: white;
+        }
+        
+        .danger-btn {
+            background: linear-gradient(45deg, #f44336, #e57373);
+            color: white;
+        }
+        
+        .neutral-btn {
+            background: linear-gradient(45deg, #9e9e9e, #bdbdbd);
+            color: white;
+        }
+        
+        /* Notifications layout */
+        .notifications-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* Sidebar */
+        .notifications-sidebar {
+            width: 250px;
+            background-color: #f5f5f5;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preference-section {
+            margin-bottom: 30px;
+        }
+        
+        .preference-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        .preference-item {
+            margin-bottom: 15px;
+        }
+        
+        .preference-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+        
+        .device-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .device-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+        
+        .quiet-hours {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        
+        .quiet-hours-inputs {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .quiet-hours-inputs input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        /* Notifications list */
+        .notifications-list {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .notification-item {
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+            position: relative;
+        }
+        
+        .notification-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .notification-item.unread {
+            background-color: rgba(255, 87, 34, 0.05);
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .notification-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--dark-color);
+        }
+        
+        .notification-time {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .notification-message {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .notification-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .notification-btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background-color: #f1f1f1;
+            color: #333;
+        }
+        
+        .notification-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .notification-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .notification-btn.primary:hover {
+            background-color: #e64a19;
+        }
+        
+        .notification-type-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-meal {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .badge-workout {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .badge-goal {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .badge-test {
+            background-color: #9c27b0;
+            color: white;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            font-size: 60px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .empty-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .empty-message {
+            font-size: 14px;
+            color: #666;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .notifications-sidebar {
+                width: 200px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .notifications-content {
+                flex-direction: column;
+            }
+            
+            .notifications-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                padding: 15px;
+            }
+            
+            .notifications-list {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container notifications-container">
+        <!-- Notifications Header -->
+        <div class="notifications-header">
+            <div class="notifications-title">
+                <div class="notifications-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div>
+                    <h1>Notifications</h1>
+                </div>
+            </div>
+            
+            <div class="notifications-actions">
+                <button type="button" id="markAllReadBtn" class="action-btn secondary-btn">
+                    <i class="fas fa-check-double"></i> Mark All Read
+                </button>
+                <button type="button" id="testNotificationBtn" class="action-btn primary-btn">
+                    <i class="fas fa-paper-plane"></i> Test Notification
+                </button>
+                <a href="{{ url_for('auth.user_dashboard') }}" class="action-btn neutral-btn">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <!-- Notifications Content -->
+        <div class="notifications-content">
+            <!-- Sidebar -->
+            <div class="notifications-sidebar">
+                <div class="preference-section">
+                    <div class="preference-title">Notification Settings</div>
+                    
+                    <div class="preference-item">
+                        <div class="preference-label">
+                            <span>Meal Reminders</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="mealToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="device-options">
+                            <label class="device-option">
+                                <input type="checkbox" id="mealMobile" checked>
+                                <span>Mobile</span>
+                            </label>
+                            <label class="device-option">
+                                <input type="checkbox" id="mealWatch" checked>
+                                <span>Watch</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="preference-item">
+                        <div class="preference-label">
+                            <span>Workout Reminders</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="workoutToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="device-options">
+                            <label class="device-option">
+                                <input type="checkbox" id="workoutMobile" checked>
+                                <span>Mobile</span>
+                            </label>
+                            <label class="device-option">
+                                <input type="checkbox" id="workoutWatch" checked>
+                                <span>Watch</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="preference-item">
+                        <div class="preference-label">
+                            <span>Goal Achievements</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="goalToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="device-options">
+                            <label class="device-option">
+                                <input type="checkbox" id="goalMobile" checked>
+                                <span>Mobile</span>
+                            </label>
+                            <label class="device-option">
+                                <input type="checkbox" id="goalWatch" checked>
+                                <span>Watch</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="preference-section">
+                    <div class="preference-title">Quiet Hours</div>
+                    <div class="quiet-hours">
+                        <p>Don't send notifications during these hours:</p>
+                        <div class="quiet-hours-inputs">
+                            <input type="time" id="quietHoursStart" value="22:00">
+                            <span>to</span>
+                            <input type="time" id="quietHoursEnd" value="07:00">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="preference-section">
+                    <div class="preference-title">Device Registration</div>
+                    <button type="button" id="registerDeviceBtn" class="action-btn primary-btn" style="width: 100%; margin-bottom: 10px;">
+                        <i class="fas fa-mobile-alt"></i> Register This Device
+                    </button>
+                    <p style="font-size: 12px; color: #666;">
+                        Register your device to receive notifications on this device.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Notifications List -->
+            <div class="notifications-list" id="notificationsList">
+                <!-- Notifications will be loaded here dynamically -->
+                
+                <!-- Empty state (shown when no notifications) -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-bell-slash"></i>
+                    </div>
+                    <div class="empty-title">No Notifications</div>
+                    <div class="empty-message">
+                        You don't have any notifications yet. They will appear here when you receive them.
+                    </div>
+                    <button type="button" id="testEmptyBtn" class="action-btn primary-btn">
+                        <i class="fas fa-paper-plane"></i> Send Test Notification
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+        }
+        
+        // DOM Elements
+        const notificationsList = document.getElementById('notificationsList');
+        const emptyState = document.getElementById('emptyState');
+        const markAllReadBtn = document.getElementById('markAllReadBtn');
+        const testNotificationBtn = document.getElementById('testNotificationBtn');
+        const testEmptyBtn = document.getElementById('testEmptyBtn');
+        const registerDeviceBtn = document.getElementById('registerDeviceBtn');
+        
+        // Preference toggles
+        const mealToggle = document.getElementById('mealToggle');
+        const workoutToggle = document.getElementById('workoutToggle');
+        const goalToggle = document.getElementById('goalToggle');
+        
+        // Device options
+        const mealMobile = document.getElementById('mealMobile');
+        const mealWatch = document.getElementById('mealWatch');
+        const workoutMobile = document.getElementById('workoutMobile');
+        const workoutWatch = document.getElementById('workoutWatch');
+        const goalMobile = document.getElementById('goalMobile');
+        const goalWatch = document.getElementById('goalWatch');
+        
+        // Quiet hours
+        const quietHoursStart = document.getElementById('quietHoursStart');
+        const quietHoursEnd = document.getElementById('quietHoursEnd');
+        
+        // Load notifications
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/api/notifications', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Clear current notifications
+                    notificationsList.innerHTML = '';
+                    
+                    // Check if there are notifications
+                    if (data.notifications.length === 0) {
+                        emptyState.style.display = 'flex';
+                    } else {
+                        emptyState.style.display = 'none';
+                        
+                        // Add notifications to the list
+                        data.notifications.forEach(notification => {
+                            const notificationItem = createNotificationItem(notification);
+                            notificationsList.appendChild(notificationItem);
+                        });
+                    }
+                } else {
+                    console.error('Failed to load notifications');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Create notification item
+        function createNotificationItem(notification) {
+            const notificationItem = document.createElement('div');
+            notificationItem.classList.add('notification-item');
+            
+            if (!notification.is_read) {
+                notificationItem.classList.add('unread');
+            }
+            
+            // Format date
+            const date = new Date(notification.created_at);
+            const formattedDate = date.toLocaleString();
+            
+            // Determine badge type
+            let badgeClass = '';
+            let badgeText = '';
+            
+            if (notification.notification_type.includes('meal')) {
+                badgeClass = 'badge-meal';
+                badgeText = 'Meal';
+            } else if (notification.notification_type.includes('workout')) {
+                badgeClass = 'badge-workout';
+                badgeText = 'Workout';
+            } else if (notification.notification_type.includes('goal')) {
+                badgeClass = 'badge-goal';
+                badgeText = 'Goal';
+            } else if (notification.notification_type === 'test') {
+                badgeClass = 'badge-test';
+                badgeText = 'Test';
+            }
+            
+            notificationItem.innerHTML = `
+                <div class="notification-type-badge ${badgeClass}">${badgeText}</div>
+                <div class="notification-header">
+                    <div class="notification-title">${notification.title}</div>
+                    <div class="notification-time">${formattedDate}</div>
+                </div>
+                <div class="notification-message">${notification.message}</div>
+                <div class="notification-actions">
+                    ${!notification.is_read ? `
+                        <button type="button" class="notification-btn" data-id="${notification.id}" data-action="mark-read">
+                            Mark as Read
+                        </button>
+                    ` : ''}
+                    <button type="button" class="notification-btn" data-id="${notification.id}" data-action="delete">
+                        Delete
+                    </button>
+                </div>
+            `;
+            
+            return notificationItem;
+        }
+        
+        // Load notification preferences
+        async function loadNotificationPreferences() {
+            try {
+                const response = await fetch('/api/notification-preferences', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const preferences = await response.json();
+                    
+                    // Set preference toggles
+                    preferences.forEach(pref => {
+                        if (pref.notification_type === 'meal_reminder') {
+                            mealToggle.checked = pref.enabled;
+                            mealMobile.checked = pref.send_mobile;
+                            mealWatch.checked = pref.send_watch;
+                        } else if (pref.notification_type === 'workout_reminder') {
+                            workoutToggle.checked = pref.enabled;
+                            workoutMobile.checked = pref.send_mobile;
+                            workoutWatch.checked = pref.send_watch;
+                        } else if (pref.notification_type === 'goal_achievement') {
+                            goalToggle.checked = pref.enabled;
+                            goalMobile.checked = pref.send_mobile;
+                            goalWatch.checked = pref.send_watch;
+                        }
+                        
+                        // Set quiet hours
+                        if (pref.quiet_hours_start) {
+                            quietHoursStart.value = pref.quiet_hours_start;
+                        }
+                        
+                        if (pref.quiet_hours_end) {
+                            quietHoursEnd.value = pref.quiet_hours_end;
+                        }
+                    });
+                } else {
+                    console.error('Failed to load notification preferences');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Save notification preference
+        async function saveNotificationPreference(type, enabled, sendMobile, sendWatch) {
+            try {
+                const response = await fetch('/api/notification-preferences', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        notification_type: type,
+                        enabled: enabled,
+                        send_mobile: sendMobile,
+                        send_watch: sendWatch,
+                        quiet_hours_start: quietHoursStart.value,
+                        quiet_hours_end: quietHoursEnd.value
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log(`Saved ${type} preference`);
+                } else {
+                    console.error(`Failed to save ${type} preference`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Mark notification as read
+        async function markNotificationRead(notificationId) {
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}/read`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    // Reload notifications
+                    loadNotifications();
+                } else {
+                    console.error('Failed to mark notification as read');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Mark all notifications as read
+        async function markAllNotificationsRead() {
+            try {
+                const response = await fetch('/api/notifications/read-all', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    // Reload notifications
+                    loadNotifications();
+                } else {
+                    console.error('Failed to mark all notifications as read');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Delete notification
+        async function deleteNotification(notificationId) {
+            try {
+                const response = await fetch(`/api/notifications/${notificationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    // Reload notifications
+                    loadNotifications();
+                } else {
+                    console.error('Failed to delete notification');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // Send test notification
+        async function sendTestNotification() {
+            try {
+                const response = await fetch('/api/notifications/test', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    // Reload notifications
+                    loadNotifications();
+                    alert('Test notification sent! Check your notifications.');
+                } else {
+                    const error = await response.json();
+                    alert(`Failed to send test notification: ${error.error}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error sending test notification. See console for details.');
+            }
+        }
+        
+        // Register device for push notifications
+        async function registerDevice() {
+            try {
+                // Check if browser supports service workers and push notifications
+                if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                    alert('Push notifications are not supported in your browser.');
+                    return;
+                }
+                
+                // Request permission
+                const permission = await Notification.requestPermission();
+                
+                if (permission !== 'granted') {
+                    alert('Permission for notifications was denied.');
+                    return;
+                }
+                
+                // For demo purposes, generate a random token
+                // In a real app, you would get this from Firebase
+                const deviceToken = 'demo-' + Math.random().toString(36).substring(2, 15);
+                
+                // Register the token
+                const response = await fetch('/api/device-tokens', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        device_type: 'mobile',
+                        token: deviceToken
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Device registered successfully for push notifications!');
+                } else {
+                    const error = await response.json();
+                    alert(`Failed to register device: ${error.error}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error registering device. See console for details.');
+            }
+        }
+        
+        // Event Listeners
+        document.addEventListener('click', function(e) {
+            // Notification action buttons
+            if (e.target.matches('[data-action="mark-read"]')) {
+                const notificationId = e.target.dataset.id;
+                markNotificationRead(notificationId);
+            } else if (e.target.matches('[data-action="delete"]')) {
+                const notificationId = e.target.dataset.id;
+                deleteNotification(notificationId);
+            }
+        });
+        
+        markAllReadBtn.addEventListener('click', markAllNotificationsRead);
+        testNotificationBtn.addEventListener('click', sendTestNotification);
+        testEmptyBtn.addEventListener('click', sendTestNotification);
+        registerDeviceBtn.addEventListener('click', registerDevice);
+        
+        // Preference change listeners
+        mealToggle.addEventListener('change', function() {
+            saveNotificationPreference('meal_reminder', this.checked, mealMobile.checked, mealWatch.checked);
+        });
+        
+        workoutToggle.addEventListener('change', function() {
+            saveNotificationPreference('workout_reminder', this.checked, workoutMobile.checked, workoutWatch.checked);
+        });
+        
+        goalToggle.addEventListener('change', function() {
+            saveNotificationPreference('goal_achievement', this.checked, goalMobile.checked, goalWatch.checked);
+        });
+        
+        // Device option change listeners
+        mealMobile.addEventListener('change', function() {
+            saveNotificationPreference('meal_reminder', mealToggle.checked, this.checked, mealWatch.checked);
+        });
+        
+        mealWatch.addEventListener('change', function() {
+            saveNotificationPreference('meal_reminder', mealToggle.checked, mealMobile.checked, this.checked);
+        });
+        
+        workoutMobile.addEventListener('change', function() {
+            saveNotificationPreference('workout_reminder', workoutToggle.checked, this.checked, workoutWatch.checked);
+        });
+        
+        workoutWatch.addEventListener('change', function() {
+            saveNotificationPreference('workout_reminder', workoutToggle.checked, workoutMobile.checked, this.checked);
+        });
+        
+        goalMobile.addEventListener('change', function() {
+            saveNotificationPreference('goal_achievement', goalToggle.checked, this.checked, goalWatch.checked);
+        });
+        
+        goalWatch.addEventListener('change', function() {
+            saveNotificationPreference('goal_achievement', goalToggle.checked, goalMobile.checked, this.checked);
+        });
+        
+        // Quiet hours change listeners
+        quietHoursStart.addEventListener('change', function() {
+            // Save all preferences with new quiet hours
+            saveNotificationPreference('meal_reminder', mealToggle.checked, mealMobile.checked, mealWatch.checked);
+            saveNotificationPreference('workout_reminder', workoutToggle.checked, workoutMobile.checked, workoutWatch.checked);
+            saveNotificationPreference('goal_achievement', goalToggle.checked, goalMobile.checked, goalWatch.checked);
+        });
+        
+        quietHoursEnd.addEventListener('change', function() {
+            // Save all preferences with new quiet hours
+            saveNotificationPreference('meal_reminder', mealToggle.checked, mealMobile.checked, mealWatch.checked);
+            saveNotificationPreference('workout_reminder', workoutToggle.checked, workoutMobile.checked, workoutWatch.checked);
+            saveNotificationPreference('goal_achievement', goalToggle.checked, goalMobile.checked, goalWatch.checked);
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load notifications
+            loadNotifications();
+            
+            // Load notification preferences
+            loadNotificationPreferences();
+        });
+    </script>
+</body>
+</html>

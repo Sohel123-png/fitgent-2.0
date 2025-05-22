@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitTrack - User Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+    <style>
+        /* Dashboard specific styles */
+        .dashboard-container {
+            max-width: 1200px;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dashboard-title h1 {
+            margin: 0;
+            padding: 0;
+        }
+
+        .dashboard-title h1::after {
+            display: none;
+        }
+
+        .dashboard-icon {
+            font-size: 30px;
+            color: var(--primary-color);
+        }
+
+        .user-welcome {
+            font-size: 16px;
+            color: var(--dark-color);
+            opacity: 0.8;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(45deg, var(--primary-color), #ff7043);
+            color: white;
+            border: none;
+        }
+
+        .secondary-btn {
+            background: linear-gradient(45deg, var(--secondary-color), #64b5f6);
+            color: white;
+            border: none;
+        }
+
+        .logout-btn {
+            background: linear-gradient(45deg, #f44336, #e57373);
+            color: white;
+            border: none;
+        }
+
+        /* Dashboard layout */
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+
+        /* Sidebar */
+        .dashboard-sidebar {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            height: fit-content;
+        }
+
+        .profile-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-picture {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            color: white;
+            overflow: hidden;
+        }
+
+        .profile-picture img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            font-size: 14px;
+            color: var(--dark-color);
+            opacity: 0.7;
+            margin-bottom: 15px;
+        }
+
+        .profile-level {
+            display: inline-block;
+            padding: 5px 15px;
+            background-color: rgba(255, 87, 34, 0.1);
+            color: var(--primary-color);
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--dark-color);
+            opacity: 0.7;
+            text-transform: uppercase;
+        }
+
+        .sidebar-menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-item {
+            margin-bottom: 10px;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .menu-link:hover, .menu-link.active {
+            background-color: rgba(255, 87, 34, 0.1);
+            color: var(--primary-color);
+        }
+
+        .menu-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Main content */
+        .dashboard-main {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 30px;
+        }
+
+        .content-section {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            color: var(--primary-color);
+        }
+
+        /* Health stats section */
+        .health-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .health-card {
+            background: linear-gradient(135deg, #fff, #f5f5f5);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .health-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+        }
+
+        .health-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .health-icon {
+            font-size: 30px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .health-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin: 5px 0;
+        }
+
+        .health-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .health-trend {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .trend-up {
+            color: #4caf50;
+        }
+
+        .trend-down {
+            color: #f44336;
+        }
+
+        .trend-neutral {
+            color: #ff9800;
+        }
+
+        /* Diet plan section */
+        .diet-plans {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .meal-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .meal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .meal-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .meal-icon {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .meal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .meal-time {
+            margin-left: auto;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .meal-items {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .meal-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .meal-item:last-child {
+            border-bottom: none;
+        }
+
+        .food-icon {
+            font-size: 16px;
+            color: var(--accent-color);
+        }
+
+        .food-name {
+            flex: 1;
+            font-size: 14px;
+            color: var(--dark-color);
+        }
+
+        .food-quantity {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .food-calories {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .meal-nutrition {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nutrition-item {
+            text-align: center;
+        }
+
+        .nutrition-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .nutrition-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-sidebar {
+                order: 2;
+            }
+
+            .dashboard-main {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .dashboard-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .health-stats, .diet-plans {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <div class="dashboard-icon">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <div>
+                    <h1>FitTrack Dashboard</h1>
+                    <p class="user-welcome">Welcome back, <span id="userName">User</span>!</p>
+                </div>
+            </div>
+
+            <div class="dashboard-actions">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="action-btn primary-btn" style="background: linear-gradient(45deg, #9c27b0, #673ab7);">
+                    <i class="fas fa-robot"></i> AI Assistant
+                </a>
+                <a href="{{ url_for('notifications.notifications_page') }}" class="action-btn primary-btn" style="background: linear-gradient(45deg, #ff9800, #ff5722);">
+                    <i class="fas fa-bell"></i> Notifications
+                </a>
+                {% if has_google_fit %}
+                <button type="button" id="syncGoogleFitBtn" class="action-btn primary-btn">
+                    <i class="fas fa-sync-alt"></i> Sync Google Fit
+                </button>
+                <a href="{{ url_for('auth.revoke_google_fit') }}" class="action-btn secondary-btn">
+                    <i class="fas fa-unlink"></i> Disconnect Google Fit
+                </a>
+                {% else %}
+                <a href="{{ url_for('auth.authorize_google_fit') }}" class="action-btn primary-btn">
+                    <i class="fab fa-google"></i> Connect Google Fit
+                </a>
+                {% endif %}
+                <button type="button" class="action-btn secondary-btn">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+                <button type="button" id="logoutBtn" class="action-btn logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Sidebar -->
+            <div class="dashboard-sidebar">
+                <div class="profile-section">
+                    <div class="profile-picture">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3 class="profile-name" id="profileName">John Doe</h3>
+                    <p class="profile-email" id="profileEmail">john@example.com</p>
+                    <div class="profile-level" id="profileLevel">Fitness Enthusiast</div>
+
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">28</div>
+                            <div class="stat-label">Workouts</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">14</div>
+                            <div class="stat-label">Days Streak</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reminders Widget -->
+                {% include 'reminders_widget.html' %}
+
+                <ul class="sidebar-menu">
+                    <li class="menu-item">
+                        <a href="#" class="menu-link active">
+                            <span class="menu-icon"><i class="fas fa-home"></i></span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-user"></i></span>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-heartbeat"></i></span>
+                            Health Stats
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('diet.diet_plan_generator_page') }}" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-utensils"></i></span>
+                            Diet Plans
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-dumbbell"></i></span>
+                            Workouts
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-chart-line"></i></span>
+                            Progress
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('reminders.reminders_page') }}" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-bell"></i></span>
+                            Reminders
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('fitness.fitness_dashboard') }}" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-heartbeat"></i></span>
+                            Fitness Stats
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('chatbot.chatbot_page') }}" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-robot"></i></span>
+                            AI Assistant
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('notifications.notifications_page') }}" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-bell"></i></span>
+                            Notifications
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="#" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-cog"></i></span>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="dashboard-main">
+                <!-- Health Stats Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-heartbeat section-icon"></i>
+                            Health Statistics
+                        </h2>
+                        <button type="button" class="action-btn primary-btn">
+                            <i class="fas fa-plus"></i> Add Measurement
+                        </button>
+                    </div>
+
+                    <div class="health-stats">
+                        <div class="health-card">
+                            <div class="health-icon">
+                                <i class="fas fa-weight"></i>
+                            </div>
+                            {% if fitness_data and fitness_data.latest_weight %}
+                            <div class="health-value">{{ fitness_data.latest_weight }} kg</div>
+                            <div class="health-label">Weight</div>
+                            {% if fitness_data.weight_change %}
+                                {% if fitness_data.weight_change < 0 %}
+                                <div class="health-trend trend-down">
+                                    <i class="fas fa-arrow-down"></i> {{ fitness_data.weight_change|abs }} kg this month
+                                </div>
+                                {% elif fitness_data.weight_change > 0 %}
+                                <div class="health-trend trend-up">
+                                    <i class="fas fa-arrow-up"></i> {{ fitness_data.weight_change }} kg this month
+                                </div>
+                                {% else %}
+                                <div class="health-trend trend-neutral">
+                                    <i class="fas fa-equals"></i> No change this month
+                                </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="health-trend trend-neutral">
+                                    <i class="fas fa-equals"></i> No previous data
+                                </div>
+                            {% endif %}
+                            {% else %}
+                            <div class="health-value">75.5 kg</div>
+                            <div class="health-label">Weight</div>
+                            <div class="health-trend trend-down">
+                                <i class="fas fa-arrow-down"></i> 1.2 kg this month
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="health-card">
+                            <div class="health-icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            {% if fitness_data and fitness_data.today_calories %}
+                            <div class="health-value">{{ fitness_data.today_calories }}</div>
+                            <div class="health-label">Daily Calories Burned</div>
+                            <div class="health-trend trend-neutral">
+                                <i class="fas fa-equals"></i> From Google Fit
+                            </div>
+                            {% else %}
+                            <div class="health-value">2,450</div>
+                            <div class="health-label">Daily Calories</div>
+                            <div class="health-trend trend-neutral">
+                                <i class="fas fa-equals"></i> Maintaining
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="health-card">
+                            <div class="health-icon">
+                                <i class="fas fa-running"></i>
+                            </div>
+                            {% if fitness_data and fitness_data.today_steps %}
+                            <div class="health-value">{{ fitness_data.today_steps }}</div>
+                            <div class="health-label">Steps Today</div>
+                            {% if fitness_data.step_change_pct %}
+                                {% if fitness_data.step_change_pct > 0 %}
+                                <div class="health-trend trend-up">
+                                    <i class="fas fa-arrow-up"></i> {{ fitness_data.step_change_pct }}% from yesterday
+                                </div>
+                                {% elif fitness_data.step_change_pct < 0 %}
+                                <div class="health-trend trend-down">
+                                    <i class="fas fa-arrow-down"></i> {{ fitness_data.step_change_pct|abs }}% from yesterday
+                                </div>
+                                {% else %}
+                                <div class="health-trend trend-neutral">
+                                    <i class="fas fa-equals"></i> Same as yesterday
+                                </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="health-trend trend-neutral">
+                                    <i class="fas fa-equals"></i> From Google Fit
+                                </div>
+                            {% endif %}
+                            {% else %}
+                            <div class="health-value">8,547</div>
+                            <div class="health-label">Steps Today</div>
+                            <div class="health-trend trend-up">
+                                <i class="fas fa-arrow-up"></i> 12% from yesterday
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="health-card">
+                            <div class="health-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            {% if fitness_data and fitness_data.avg_resting_heart_rate %}
+                            <div class="health-value">{{ fitness_data.avg_resting_heart_rate }} bpm</div>
+                            <div class="health-label">Resting Heart Rate</div>
+                            <div class="health-trend trend-neutral">
+                                <i class="fas fa-equals"></i> From Google Fit
+                            </div>
+                            {% else %}
+                            <div class="health-value">72 bpm</div>
+                            <div class="health-label">Resting Heart Rate</div>
+                            <div class="health-trend trend-down">
+                                <i class="fas fa-arrow-down"></i> 3 bpm this month
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="health-card">
+                            <div class="health-icon">
+                                <i class="fas fa-bed"></i>
+                            </div>
+                            {% if fitness_data and fitness_data.last_night_sleep %}
+                            <div class="health-value">{{ fitness_data.last_night_sleep }} hrs</div>
+                            <div class="health-label">Last Night's Sleep</div>
+                            <div class="health-trend trend-neutral">
+                                <i class="fas fa-equals"></i> From Google Fit
+                            </div>
+                            {% else %}
+                            <div class="health-value">7.5 hrs</div>
+                            <div class="health-label">Sleep Duration</div>
+                            <div class="health-trend trend-neutral">
+                                <i class="fas fa-equals"></i> No data available
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diet Plan Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-utensils section-icon"></i>
+                            Today's Diet Plan
+                        </h2>
+                        <a href="{{ url_for('diet.diet_plan_generator_page') }}" class="action-btn primary-btn">
+                            <i class="fas fa-edit"></i> Customize Plan
+                        </a>
+                    </div>
+
+                    <div class="diet-plans">
+                        <div class="meal-card">
+                            <div class="meal-header">
+                                <div class="meal-icon">
+                                    <i class="fas fa-coffee"></i>
+                                </div>
+                                <h3 class="meal-title">Breakfast</h3>
+                                <div class="meal-time">7:00 AM</div>
+                            </div>
+
+                            <ul class="meal-items">
+                                <li class="meal-item">
+                                    <span class="food-icon"><i class="fas fa-egg"></i></span>
+                                    <span class="food-name">Scrambled Eggs</span>
+                                    <span class="food-quantity">2 eggs</span>
+                                    <span class="food-calories">180 kcal</span>
+                                </li>
+                                <li class="meal-item">
+                                    <span class="food-icon"><i class="fas fa-bread-slice"></i></span>
+                                    <span class="food-name">Whole Grain Toast</span>
+                                    <span class="food-quantity">2 slices</span>
+                                    <span class="food-calories">160 kcal</span>
+                                </li>
+                                <li class="meal-item">
+                                    <span class="food-icon"><i class="fas fa-apple-alt"></i></span>
+                                    <span class="food-name">Apple</span>
+                                    <span class="food-quantity">1 medium</span>
+                                    <span class="food-calories">95 kcal</span>
+                                </li>
+                            </ul>
+
+                            <div class="meal-nutrition">
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">435</div>
+                                    <div class="nutrition-label">Calories</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">25g</div>
+                                    <div class="nutrition-label">Protein</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">45g</div>
+                                    <div class="nutrition-label">Carbs</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">15g</div>
+                                    <div class="nutrition-label">Fat</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="meal-card">
+                            <div class="meal-header">
+                                <div class="meal-icon">
+                                    <i class="fas fa-drumstick-bite"></i>
+                                </div>
+                                <h3 class="meal-title">Lunch</h3>
+                                <div class="meal-time">12:30 PM</div>
+                            </div>
+
+                            <ul class="meal-items">
+                                <li class="meal-item">
+                                    <span class="food-icon"><i class="fas fa-drumstick-bite"></i></span>
+                                    <span class="food-name">Grilled Chicken Breast</span>
+                                    <span class="food-quantity">150g</span>
+                                    <span class="food-calories">250 kcal</span>
+                                </li>
+                                <li class="meal-item">
+                                    <span class="food-icon"><i class="fas fa-seedling"></i></span>
+                                    <span class="food-name">Mixed Salad</span>
+                                    <span class="food-quantity">100g</span>
+                                    <span class="food-calories">35 kcal</span>
+                                </li>
+                                <li class="meal-item">
+                                    <span class="food-icon"><i class="fas fa-carrot"></i></span>
+                                    <span class="food-name">Sweet Potato</span>
+                                    <span class="food-quantity">1 medium</span>
+                                    <span class="food-calories">115 kcal</span>
+                                </li>
+                            </ul>
+
+                            <div class="meal-nutrition">
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">400</div>
+                                    <div class="nutrition-label">Calories</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">40g</div>
+                                    <div class="nutrition-label">Protein</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">30g</div>
+                                    <div class="nutrition-label">Carbs</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">8g</div>
+                                    <div class="nutrition-label">Fat</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="meal-card">
+                            <div class="meal-header">
+                                <div class="meal-icon">
+                                    <i class="fas fa-fish"></i>
+                                </div>
+                                <h3 class="meal-title">Dinner</h3>
+                                <div class="meal-time">7:00 PM</div>
+                            </div>
+
+                            <ul class="meal-items">
+                                <li class="meal-item">
+                                    <span class="food-icon"><i class="fas fa-fish"></i></span>
+                                    <span class="food-name">Grilled Salmon</span>
+                                    <span class="food-quantity">150g</span>
+                                    <span class="food-calories">280 kcal</span>
+                                </li>
+                                <li class="meal-item">
+                                    <span class="food-icon"><i class="fas fa-leaf"></i></span>
+                                    <span class="food-name">Steamed Broccoli</span>
+                                    <span class="food-quantity">100g</span>
+                                    <span class="food-calories">55 kcal</span>
+                                </li>
+                                <li class="meal-item">
+                                    <span class="food-icon"><i class="fas fa-seedling"></i></span>
+                                    <span class="food-name">Quinoa</span>
+                                    <span class="food-quantity">100g cooked</span>
+                                    <span class="food-calories">120 kcal</span>
+                                </li>
+                            </ul>
+
+                            <div class="meal-nutrition">
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">455</div>
+                                    <div class="nutrition-label">Calories</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">42g</div>
+                                    <div class="nutrition-label">Protein</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">25g</div>
+                                    <div class="nutrition-label">Carbs</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-value">18g</div>
+                                    <div class="nutrition-label">Fat</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = '/login';
+        }
+
+        // Function to decode JWT token
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Get user info from token
+        const userData = parseJwt(token);
+        if (userData) {
+            // Update user information
+            document.getElementById('userName').textContent = userData.sub.email.split('@')[0] || 'User';
+            document.getElementById('profileName').textContent = userData.sub.email.split('@')[0] || 'User';
+            document.getElementById('profileEmail').textContent = userData.sub.email || 'user@example.com';
+
+            // Update user level
+            const userLevel = userData.sub.role === 'Admin' ? 'Fitness Trainer' : 'Fitness Enthusiast';
+            document.getElementById('profileLevel').textContent = userLevel;
+        }
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            window.location.href = '/login';
+        });
+
+        // Google Fit sync functionality
+        const syncGoogleFitBtn = document.getElementById('syncGoogleFitBtn');
+        if (syncGoogleFitBtn) {
+            syncGoogleFitBtn.addEventListener('click', async function() {
+                try {
+                    // Show loading state
+                    syncGoogleFitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+                    syncGoogleFitBtn.disabled = true;
+
+                    // Call the sync endpoint
+                    const response = await fetch('/sync-google-fit');
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Reload the page to show updated data
+                        window.location.reload();
+                    } else {
+                        alert('Error syncing with Google Fit: ' + (data.error || 'Unknown error'));
+
+                        // Reset button
+                        syncGoogleFitBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Sync Google Fit';
+                        syncGoogleFitBtn.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while syncing with Google Fit. Please try again.');
+
+                    // Reset button
+                    syncGoogleFitBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Sync Google Fit';
+                    syncGoogleFitBtn.disabled = false;
+                }
+            });
+        }
+
+        // Show Google Fit connection status
+        {% if has_google_fit %}
+        console.log('Connected to Google Fit');
+        {% else %}
+        console.log('Not connected to Google Fit');
+        {% endif %}
+
+        // Show fitness data if available
+        {% if fitness_data %}
+        console.log('Fitness data available:', {{ fitness_data|tojson }});
+        {% else %}
+        console.log('No fitness data available');
+        {% endif %}
+    </script>
+</body>
+</html>

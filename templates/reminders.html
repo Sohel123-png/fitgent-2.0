@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminders - FitTrack</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Reminders specific styles */
+        .reminders-container {
+            max-width: 1000px;
+            padding: 30px;
+        }
+
+        .reminders-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .reminders-title-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .reminders-icon {
+            font-size: 30px;
+            color: var(--primary-color);
+        }
+
+        .reminders-title {
+            margin: 0;
+            padding: 0;
+        }
+
+        .reminders-subtitle {
+            color: var(--dark-color);
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .add-reminder-btn {
+            background: linear-gradient(45deg, var(--primary-color), #ff7043);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-reminder-btn:hover {
+            background: linear-gradient(45deg, #ff7043, var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
+        }
+
+        .reminders-tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .reminder-tab {
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .reminder-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .reminders-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .reminder-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .reminder-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .reminder-type-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .reminder-type-meal {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: #ff9800;
+        }
+
+        .reminder-type-water {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+        }
+
+        .reminder-type-exercise {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+
+        .reminder-time {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+
+        .reminder-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+
+        .reminder-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .reminder-days {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .reminder-day {
+            background-color: #f5f5f5;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .reminder-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .reminder-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .reminder-toggle-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .reminder-action-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .reminder-action-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .reminder-action-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .reminder-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .reminder-modal-content {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .reminder-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .reminder-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .reminder-modal-close {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+        }
+
+        .reminder-form-group {
+            margin-bottom: 20px;
+        }
+
+        .reminder-form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .reminder-form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .reminder-form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.2);
+            outline: none;
+        }
+
+        .reminder-days-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .day-checkbox {
+            display: none;
+        }
+
+        .day-label {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #f5f5f5;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .day-checkbox:checked + .day-label {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .reminder-submit-btn {
+            background: linear-gradient(45deg, var(--primary-color), #ff7043);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .reminder-submit-btn:hover {
+            background: linear-gradient(45deg, #ff7043, var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 0;
+        }
+
+        .empty-state-icon {
+            font-size: 60px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-state-text {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .reminders-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .reminders-list {
+                grid-template-columns: 1fr;
+            }
+
+            .reminder-days-select {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container reminders-container">
+        <!-- Header -->
+        <div class="reminders-header">
+            <div class="reminders-title-section">
+                <div class="reminders-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div>
+                    <h1 class="reminders-title">Reminders</h1>
+                    <p class="reminders-subtitle">Set up reminders for meals, water, and exercise</p>
+                </div>
+            </div>
+
+            <button id="addReminderBtn" class="add-reminder-btn">
+                <i class="fas fa-plus"></i> Add Reminder
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="reminders-tabs">
+            <div class="reminder-tab active" data-type="all">All Reminders</div>
+            <div class="reminder-tab" data-type="meal">Meals</div>
+            <div class="reminder-tab" data-type="water">Water</div>
+            <div class="reminder-tab" data-type="exercise">Exercise</div>
+        </div>
+
+        <!-- Reminders List -->
+        <div id="remindersList" class="reminders-list">
+            <!-- Reminders will be loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">
+                <i class="fas fa-bell-slash"></i>
+            </div>
+            <div class="empty-state-text">You don't have any reminders yet</div>
+            <button id="emptyStateAddBtn" class="add-reminder-btn">
+                <i class="fas fa-plus"></i> Add Your First Reminder
+            </button>
+        </div>
+    </div>
+
+    <!-- Add/Edit Reminder Modal -->
+    <div id="reminderModal" class="reminder-modal">
+        <div class="reminder-modal-content">
+            <div class="reminder-modal-header">
+                <h2 id="modalTitle" class="reminder-modal-title">Add Reminder</h2>
+                <button id="closeModal" class="reminder-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="reminderForm">
+                <input type="hidden" id="reminderId" name="reminderId">
+
+                <div class="reminder-form-group">
+                    <label for="reminderType" class="reminder-form-label">Reminder Type</label>
+                    <select id="reminderType" name="reminderType" class="reminder-form-control" required>
+                        <option value="meal">Meal</option>
+                        <option value="water">Water</option>
+                        <option value="exercise">Exercise</option>
+                    </select>
+                </div>
+
+                <div class="reminder-form-group">
+                    <label for="reminderTitle" class="reminder-form-label">Title</label>
+                    <input type="text" id="reminderTitle" name="reminderTitle" class="reminder-form-control" placeholder="e.g., Breakfast, Drink Water, Go for a Run" required>
+                </div>
+
+                <div class="reminder-form-group">
+                    <label for="reminderDescription" class="reminder-form-label">Description (Optional)</label>
+                    <textarea id="reminderDescription" name="reminderDescription" class="reminder-form-control" placeholder="Add a note about this reminder"></textarea>
+                </div>
+
+                <div class="reminder-form-group">
+                    <label for="reminderTime" class="reminder-form-label">Time</label>
+                    <input type="time" id="reminderTime" name="reminderTime" class="reminder-form-control" required>
+                </div>
+
+                <div class="reminder-form-group">
+                    <label class="reminder-form-label">Days</label>
+                    <div class="reminder-days-select">
+                        <input type="checkbox" id="day-monday" class="day-checkbox" value="Monday">
+                        <label for="day-monday" class="day-label">Mon</label>
+
+                        <input type="checkbox" id="day-tuesday" class="day-checkbox" value="Tuesday">
+                        <label for="day-tuesday" class="day-label">Tue</label>
+
+                        <input type="checkbox" id="day-wednesday" class="day-checkbox" value="Wednesday">
+                        <label for="day-wednesday" class="day-label">Wed</label>
+
+                        <input type="checkbox" id="day-thursday" class="day-checkbox" value="Thursday">
+                        <label for="day-thursday" class="day-label">Thu</label>
+
+                        <input type="checkbox" id="day-friday" class="day-checkbox" value="Friday">
+                        <label for="day-friday" class="day-label">Fri</label>
+
+                        <input type="checkbox" id="day-saturday" class="day-checkbox" value="Saturday">
+                        <label for="day-saturday" class="day-label">Sat</label>
+
+                        <input type="checkbox" id="day-sunday" class="day-checkbox" value="Sunday">
+                        <label for="day-sunday" class="day-label">Sun</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="reminder-submit-btn">Save Reminder</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        let isLoggedIn = !!token;
+
+        // If not logged in, show a warning
+        if (!isLoggedIn) {
+            alert('You are not logged in. You can view the reminders page, but you will not be able to create or manage reminders. Please log in to use all features.');
+        }
+
+        // DOM elements
+        const remindersList = document.getElementById('remindersList');
+        const emptyState = document.getElementById('emptyState');
+        const reminderTabs = document.querySelectorAll('.reminder-tab');
+        const addReminderBtn = document.getElementById('addReminderBtn');
+        const emptyStateAddBtn = document.getElementById('emptyStateAddBtn');
+        const reminderModal = document.getElementById('reminderModal');
+        const closeModal = document.getElementById('closeModal');
+        const reminderForm = document.getElementById('reminderForm');
+        const modalTitle = document.getElementById('modalTitle');
+
+        // Current filter
+        let currentFilter = 'all';
+
+        // Reminders data
+        let reminders = [];
+
+        // Load reminders
+        async function loadReminders() {
+            try {
+                if (!isLoggedIn) {
+                    // If not logged in, show empty state with login message
+                    remindersList.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    document.querySelector('.empty-state-text').textContent = 'Please log in to view and manage your reminders';
+                    document.getElementById('emptyStateAddBtn').textContent = 'Log In';
+                    document.getElementById('emptyStateAddBtn').onclick = function() {
+                        window.location.href = '/login';
+                    };
+                    return;
+                }
+
+                const response = await fetch('/api/reminders', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    reminders = await response.json();
+                    displayReminders();
+                } else {
+                    console.error('Failed to load reminders');
+                    // Show error state
+                    remindersList.style.display = 'none';
+                    emptyState.style.display = 'block';
+                    document.querySelector('.empty-state-text').textContent = 'Failed to load reminders. Please try again.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Show error state
+                remindersList.style.display = 'none';
+                emptyState.style.display = 'block';
+                document.querySelector('.empty-state-text').textContent = 'An error occurred while loading reminders.';
+            }
+        }
+
+        // Display reminders based on current filter
+        function displayReminders() {
+            // Filter reminders
+            let filteredReminders = reminders;
+            if (currentFilter !== 'all') {
+                filteredReminders = reminders.filter(reminder => reminder.reminder_type === currentFilter);
+            }
+
+            // Show empty state if no reminders
+            if (filteredReminders.length === 0) {
+                remindersList.style.display = 'none';
+                emptyState.style.display = 'block';
+            } else {
+                remindersList.style.display = 'grid';
+                emptyState.style.display = 'none';
+
+                // Clear previous reminders
+                remindersList.innerHTML = '';
+
+                // Add reminders to the list
+                filteredReminders.forEach(reminder => {
+                    const reminderCard = document.createElement('div');
+                    reminderCard.className = 'reminder-card';
+
+                    // Format days
+                    const daysHTML = reminder.days.map(day => `<div class="reminder-day">${day.substring(0, 3)}</div>`).join('');
+
+                    reminderCard.innerHTML = `
+                        <div class="reminder-type-badge reminder-type-${reminder.reminder_type}">${reminder.reminder_type}</div>
+                        <div class="reminder-time">${reminder.time}</div>
+                        <div class="reminder-title">${reminder.title}</div>
+                        <div class="reminder-description">${reminder.description || ''}</div>
+                        <div class="reminder-days">${daysHTML}</div>
+                        <div class="reminder-actions">
+                            <div class="reminder-toggle">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" ${reminder.is_active ? 'checked' : ''} onchange="toggleReminder(${reminder.id}, this.checked)">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="reminder-toggle-label">${reminder.is_active ? 'Active' : 'Inactive'}</span>
+                            </div>
+                            <div class="reminder-action-btns">
+                                <button class="reminder-action-btn" onclick="editReminder(${reminder.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="reminder-action-btn" onclick="deleteReminder(${reminder.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+
+                    remindersList.appendChild(reminderCard);
+                });
+            }
+        }
+
+        // Toggle reminder active state
+        async function toggleReminder(id, isActive) {
+            // Check if user is logged in
+            if (!isLoggedIn) {
+                alert('Please log in to manage reminders');
+                window.location.href = '/login';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/reminders/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ is_active: isActive })
+                });
+
+                if (response.ok) {
+                    // Update local data
+                    const reminder = reminders.find(r => r.id === id);
+                    if (reminder) {
+                        reminder.is_active = isActive;
+                    }
+
+                    // Update UI
+                    const toggleLabel = document.querySelector(`.reminder-card:has(input[onchange="toggleReminder(${id}, this.checked)"]) .reminder-toggle-label`);
+                    if (toggleLabel) {
+                        toggleLabel.textContent = isActive ? 'Active' : 'Inactive';
+                    }
+                } else {
+                    console.error('Failed to update reminder');
+                    alert('Failed to update reminder. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while updating the reminder.');
+            }
+        }
+
+        // Edit reminder
+        function editReminder(id) {
+            // Check if user is logged in
+            if (!isLoggedIn) {
+                alert('Please log in to edit reminders');
+                window.location.href = '/login';
+                return;
+            }
+
+            const reminder = reminders.find(r => r.id === id);
+            if (!reminder) return;
+
+            // Set form values
+            document.getElementById('reminderId').value = reminder.id;
+            document.getElementById('reminderType').value = reminder.reminder_type;
+            document.getElementById('reminderTitle').value = reminder.title;
+            document.getElementById('reminderDescription').value = reminder.description || '';
+            document.getElementById('reminderTime').value = reminder.time;
+
+            // Set days
+            document.querySelectorAll('.day-checkbox').forEach(checkbox => {
+                checkbox.checked = reminder.days.includes(checkbox.value);
+            });
+
+            // Update modal title
+            modalTitle.textContent = 'Edit Reminder';
+
+            // Show modal
+            reminderModal.style.display = 'flex';
+        }
+
+        // Delete reminder
+        async function deleteReminder(id) {
+            // Check if user is logged in
+            if (!isLoggedIn) {
+                alert('Please log in to delete reminders');
+                window.location.href = '/login';
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this reminder?')) return;
+
+            try {
+                const response = await fetch(`/api/reminders/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Remove from local data
+                    reminders = reminders.filter(r => r.id !== id);
+
+                    // Update UI
+                    displayReminders();
+                } else {
+                    console.error('Failed to delete reminder');
+                    alert('Failed to delete reminder. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the reminder.');
+            }
+        }
+
+        // Show add reminder modal
+        function showAddReminderModal() {
+            // Check if user is logged in
+            if (!isLoggedIn) {
+                alert('Please log in to add reminders');
+                window.location.href = '/login';
+                return;
+            }
+
+            // Reset form
+            reminderForm.reset();
+            document.getElementById('reminderId').value = '';
+
+            // Update modal title
+            modalTitle.textContent = 'Add Reminder';
+
+            // Show modal
+            reminderModal.style.display = 'flex';
+        }
+
+        // Event listeners
+        reminderTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update active tab
+                reminderTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Update filter
+                currentFilter = tab.dataset.type;
+
+                // Update displayed reminders
+                displayReminders();
+            });
+        });
+
+        addReminderBtn.addEventListener('click', showAddReminderModal);
+        emptyStateAddBtn.addEventListener('click', showAddReminderModal);
+
+        closeModal.addEventListener('click', () => {
+            reminderModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        reminderModal.addEventListener('click', (e) => {
+            if (e.target === reminderModal) {
+                reminderModal.style.display = 'none';
+            }
+        });
+
+        // Form submission
+        reminderForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Check if user is logged in
+            if (!isLoggedIn) {
+                alert('Please log in to save reminders');
+                window.location.href = '/login';
+                return;
+            }
+
+            // Get form data
+            const reminderId = document.getElementById('reminderId').value;
+            const reminderType = document.getElementById('reminderType').value;
+            const reminderTitle = document.getElementById('reminderTitle').value;
+            const reminderDescription = document.getElementById('reminderDescription').value;
+            const reminderTime = document.getElementById('reminderTime').value;
+
+            // Get selected days
+            const selectedDays = [];
+            document.querySelectorAll('.day-checkbox:checked').forEach(checkbox => {
+                selectedDays.push(checkbox.value);
+            });
+
+            if (selectedDays.length === 0) {
+                alert('Please select at least one day');
+                return;
+            }
+
+            // Prepare data
+            const data = {
+                reminder_type: reminderType,
+                title: reminderTitle,
+                description: reminderDescription,
+                time: reminderTime,
+                days: selectedDays
+            };
+
+            try {
+                let response;
+
+                if (reminderId) {
+                    // Update existing reminder
+                    response = await fetch(`/api/reminders/${reminderId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    // Create new reminder
+                    response = await fetch('/api/reminders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify(data)
+                    });
+                }
+
+                if (response.ok) {
+                    // Reload reminders
+                    await loadReminders();
+
+                    // Close modal
+                    reminderModal.style.display = 'none';
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Failed to save reminder');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while saving the reminder');
+            }
+        });
+
+        // Load reminders on page load
+        loadReminders();
+    </script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+{
+    "breakfast": [
+        {
+            "name": "Scrambled Eggs with Whole Grain Toast",
+            "ingredients": [
+                "2 eggs",
+                "2 slices whole grain bread",
+                "1 tsp olive oil",
+                "Salt and pepper to taste"
+            ],
+            "calories": 350,
+            "protein": 20,
+            "carbs": 30,
+            "fat": 15,
+            "preparation": "Whisk eggs, cook in olive oil, serve with toast.",
+            "diet_types": [
+                "balanced",
+                "high_protein",
+                "low_carb"
+            ],
+            "image": "scrambled_eggs.jpg"
+        },
+        {
+            "name": "Greek Yogurt with Berries and Honey",
+            "ingredients": [
+                "1 cup Greek yogurt",
+                "1/2 cup mixed berries",
+                "1 tbsp honey",
+                "1 tbsp chia seeds"
+            ],
+            "calories": 300,
+            "protein": 18,
+            "carbs": 35,
+            "fat": 8,
+            "preparation": "Mix yogurt with berries, drizzle with honey, sprinkle chia seeds.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "high_protein"
+            ],
+            "image": "greek_yogurt.jpg"
+        },
+        {
+            "name": "Avocado Toast with Poached Egg",
+            "ingredients": [
+                "1 slice whole grain bread",
+                "1/2 avocado",
+                "1 egg",
+                "Red pepper flakes",
+                "Salt to taste"
+            ],
+            "calories": 320,
+            "protein": 15,
+            "carbs": 25,
+            "fat": 18,
+            "preparation": "Toast bread, spread mashed avocado, top with poached egg.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "high_protein"
+            ],
+            "image": "avocado_toast.jpg"
+        },
+        {
+            "name": "Oatmeal with Banana and Almond Butter",
+            "ingredients": [
+                "1/2 cup rolled oats",
+                "1 cup almond milk",
+                "1 banana",
+                "1 tbsp almond butter",
+                "1 tsp cinnamon"
+            ],
+            "calories": 380,
+            "protein": 12,
+            "carbs": 60,
+            "fat": 10,
+            "preparation": "Cook oats with almond milk, top with sliced banana and almond butter.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "vegan",
+                "high_carb"
+            ],
+            "image": "oatmeal.jpg"
+        },
+        {
+            "name": "Protein Smoothie Bowl",
+            "ingredients": [
+                "1 scoop protein powder",
+                "1 banana",
+                "1/2 cup berries",
+                "1 cup almond milk",
+                "1 tbsp granola"
+            ],
+            "calories": 340,
+            "protein": 25,
+            "carbs": 45,
+            "fat": 5,
+            "preparation": "Blend protein powder, banana, berries, and milk. Top with granola.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "high_protein",
+                "high_carb"
+            ],
+            "image": "smoothie_bowl.jpg"
+        }
+    ],
+    "lunch": [
+        {
+            "name": "Grilled Chicken Salad",
+            "ingredients": [
+                "4 oz grilled chicken breast",
+                "2 cups mixed greens",
+                "1/4 cup cherry tomatoes",
+                "1/4 cucumber",
+                "2 tbsp olive oil dressing"
+            ],
+            "calories": 350,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 20,
+            "preparation": "Grill chicken, mix with greens and vegetables, dress with olive oil.",
+            "diet_types": [
+                "balanced",
+                "high_protein",
+                "low_carb"
+            ],
+            "image": "chicken_salad.jpg"
+        },
+        {
+            "name": "Quinoa Bowl with Roasted Vegetables",
+            "ingredients": [
+                "1/2 cup quinoa",
+                "1 cup roasted vegetables",
+                "1/4 avocado",
+                "2 tbsp tahini dressing"
+            ],
+            "calories": 400,
+            "protein": 12,
+            "carbs": 50,
+            "fat": 18,
+            "preparation": "Cook quinoa, top with roasted vegetables and avocado, drizzle with tahini.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "vegan",
+                "high_carb"
+            ],
+            "image": "quinoa_bowl.jpg"
+        },
+        {
+            "name": "Turkey and Avocado Wrap",
+            "ingredients": [
+                "1 whole grain wrap",
+                "3 oz turkey slices",
+                "1/4 avocado",
+                "Lettuce",
+                "Tomato",
+                "1 tbsp hummus"
+            ],
+            "calories": 380,
+            "protein": 25,
+            "carbs": 35,
+            "fat": 15,
+            "preparation": "Spread hummus on wrap, layer with turkey, avocado, lettuce, and tomato.",
+            "diet_types": [
+                "balanced",
+                "high_protein"
+            ],
+            "image": "turkey_wrap.jpg"
+        },
+        {
+            "name": "Lentil Soup with Whole Grain Bread",
+            "ingredients": [
+                "1 cup lentil soup",
+                "1 slice whole grain bread",
+                "1 tsp olive oil"
+            ],
+            "calories": 320,
+            "protein": 15,
+            "carbs": 45,
+            "fat": 8,
+            "preparation": "Heat soup, serve with bread drizzled with olive oil.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "vegan",
+                "high_carb"
+            ],
+            "image": "lentil_soup.jpg"
+        },
+        {
+            "name": "Tuna Salad Stuffed Avocado",
+            "ingredients": [
+                "1 can tuna",
+                "1 avocado",
+                "1 tbsp Greek yogurt",
+                "1 tbsp lemon juice",
+                "Diced celery",
+                "Salt and pepper"
+            ],
+            "calories": 350,
+            "protein": 30,
+            "carbs": 10,
+            "fat": 22,
+            "preparation": "Mix tuna with yogurt, lemon juice, and celery. Stuff into avocado halves.",
+            "diet_types": [
+                "high_protein",
+                "low_carb"
+            ],
+            "image": "tuna_avocado.jpg"
+        }
+    ],
+    "dinner": [
+        {
+            "name": "Grilled Salmon with Roasted Vegetables",
+            "ingredients": [
+                "5 oz salmon fillet",
+                "1 cup mixed vegetables",
+                "1 tbsp olive oil",
+                "Lemon juice",
+                "Herbs"
+            ],
+            "calories": 420,
+            "protein": 35,
+            "carbs": 15,
+            "fat": 25,
+            "preparation": "Grill salmon, roast vegetables with olive oil and herbs.",
+            "diet_types": [
+                "balanced",
+                "high_protein",
+                "low_carb"
+            ],
+            "image": "grilled_salmon.jpg"
+        },
+        {
+            "name": "Chicken Stir-Fry with Brown Rice",
+            "ingredients": [
+                "4 oz chicken breast",
+                "1 cup mixed vegetables",
+                "1/2 cup brown rice",
+                "1 tbsp soy sauce",
+                "1 tsp sesame oil"
+            ],
+            "calories": 400,
+            "protein": 30,
+            "carbs": 40,
+            "fat": 12,
+            "preparation": "Stir-fry chicken and vegetables, serve over brown rice.",
+            "diet_types": [
+                "balanced",
+                "high_protein"
+            ],
+            "image": "chicken_stir_fry.jpg"
+        },
+        {
+            "name": "Vegetable and Chickpea Curry",
+            "ingredients": [
+                "1/2 cup chickpeas",
+                "1 cup mixed vegetables",
+                "1/4 cup coconut milk",
+                "1 tbsp curry paste",
+                "1/2 cup brown rice"
+            ],
+            "calories": 380,
+            "protein": 12,
+            "carbs": 55,
+            "fat": 14,
+            "preparation": "Simmer vegetables and chickpeas in coconut milk and curry paste, serve with rice.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "vegan",
+                "high_carb"
+            ],
+            "image": "vegetable_curry.jpg"
+        },
+        {
+            "name": "Baked Cod with Quinoa and Asparagus",
+            "ingredients": [
+                "5 oz cod fillet",
+                "1/2 cup quinoa",
+                "8 asparagus spears",
+                "1 tbsp olive oil",
+                "Lemon juice",
+                "Herbs"
+            ],
+            "calories": 350,
+            "protein": 32,
+            "carbs": 30,
+            "fat": 10,
+            "preparation": "Bake cod with lemon and herbs, serve with quinoa and steamed asparagus.",
+            "diet_types": [
+                "balanced",
+                "high_protein"
+            ],
+            "image": "baked_cod.jpg"
+        },
+        {
+            "name": "Turkey Meatballs with Zucchini Noodles",
+            "ingredients": [
+                "4 oz ground turkey",
+                "1 egg",
+                "2 tbsp breadcrumbs",
+                "2 zucchini (spiralized)",
+                "1/2 cup tomato sauce",
+                "Herbs"
+            ],
+            "calories": 370,
+            "protein": 35,
+            "carbs": 15,
+            "fat": 18,
+            "preparation": "Form and bake meatballs, serve over zucchini noodles with tomato sauce.",
+            "diet_types": [
+                "high_protein",
+                "low_carb"
+            ],
+            "image": "turkey_meatballs.jpg"
+        }
+    ],
+    "snacks": [
+        {
+            "name": "Apple with Almond Butter",
+            "ingredients": [
+                "1 apple",
+                "1 tbsp almond butter"
+            ],
+            "calories": 180,
+            "protein": 4,
+            "carbs": 25,
+            "fat": 8,
+            "preparation": "Slice apple, serve with almond butter for dipping.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "vegan"
+            ],
+            "image": "apple_almond.jpg"
+        },
+        {
+            "name": "Greek Yogurt with Honey",
+            "ingredients": [
+                "1/2 cup Greek yogurt",
+                "1 tsp honey",
+                "1 tbsp walnuts"
+            ],
+            "calories": 150,
+            "protein": 12,
+            "carbs": 10,
+            "fat": 6,
+            "preparation": "Top yogurt with honey and crushed walnuts.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "high_protein"
+            ],
+            "image": "yogurt_honey.jpg"
+        },
+        {
+            "name": "Protein Shake",
+            "ingredients": [
+                "1 scoop protein powder",
+                "1 cup almond milk",
+                "1/2 banana",
+                "Ice"
+            ],
+            "calories": 200,
+            "protein": 20,
+            "carbs": 15,
+            "fat": 5,
+            "preparation": "Blend all ingredients until smooth.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "high_protein"
+            ],
+            "image": "protein_shake.jpg"
+        },
+        {
+            "name": "Hummus with Vegetable Sticks",
+            "ingredients": [
+                "1/4 cup hummus",
+                "1 cup mixed vegetable sticks (carrots, celery, bell peppers)"
+            ],
+            "calories": 170,
+            "protein": 6,
+            "carbs": 20,
+            "fat": 8,
+            "preparation": "Serve hummus with vegetable sticks for dipping.",
+            "diet_types": [
+                "balanced",
+                "vegetarian",
+                "vegan"
+            ],
+            "image": "hummus_veggies.jpg"
+        },
+        {
+            "name": "Hard-Boiled Eggs",
+            "ingredients": [
+                "2 hard-boiled eggs",
+                "Salt and pepper to taste"
+            ],
+            "calories": 140,
+            "protein": 12,
+            "carbs": 0,
+            "fat": 10,
+            "preparation": "Boil eggs, peel and season with salt and pepper.",
+            "diet_types": [
+                "high_protein",
+                "low_carb"
+            ],
+            "image": "boiled_eggs.jpg"
+        }
+    ]
+}

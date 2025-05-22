@@ -1,0 +1,10 @@
+Flask
+Flask-JWT-Extended
+Flask-SQLAlchemy
+Flask-CORS
+python-dotenv
+bcrypt
+google-api-python-client
+google-auth
+google-auth-oauthlib
+google-auth-httplib2

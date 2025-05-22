@@ -1,0 +1,187 @@
+<!-- Today's Reminders Widget -->
+<div class="dashboard-card">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-bell"></i> Today's Reminders
+        </h3>
+        <a href="{{ url_for('reminders.reminders_page') }}" class="card-link">Manage</a>
+    </div>
+    <div class="card-body" id="remindersWidget">
+        <div class="loading-spinner"></div>
+    </div>
+</div>
+
+<script>
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    const isLoggedIn = !!token;
+
+    // Load today's reminders
+    async function loadTodaysReminders() {
+        try {
+            if (!isLoggedIn) {
+                document.getElementById('remindersWidget').innerHTML = `
+                    <p class="text-muted">Please <a href="/login">log in</a> to view your reminders</p>
+                `;
+                return;
+            }
+
+            const response = await fetch('/api/reminders/today', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const reminders = await response.json();
+                displayTodaysReminders(reminders);
+            } else {
+                console.error('Failed to load reminders');
+                document.getElementById('remindersWidget').innerHTML = '<p class="text-muted">Failed to load reminders</p>';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('remindersWidget').innerHTML = '<p class="text-muted">Failed to load reminders</p>';
+        }
+    }
+
+    // Display today's reminders
+    function displayTodaysReminders(reminders) {
+        const remindersWidget = document.getElementById('remindersWidget');
+
+        if (reminders.length === 0) {
+            remindersWidget.innerHTML = '<p class="text-muted">No reminders for today</p>';
+            return;
+        }
+
+        // Sort reminders by time
+        reminders.sort((a, b) => {
+            const timeA = a.time.split(':').map(Number);
+            const timeB = b.time.split(':').map(Number);
+
+            if (timeA[0] !== timeB[0]) {
+                return timeA[0] - timeB[0];
+            }
+
+            return timeA[1] - timeB[1];
+        });
+
+        // Create HTML
+        let html = '<ul class="reminders-list">';
+
+        reminders.forEach(reminder => {
+            // Get icon based on reminder type
+            let icon = 'bell';
+            if (reminder.reminder_type === 'meal') {
+                icon = 'utensils';
+            } else if (reminder.reminder_type === 'water') {
+                icon = 'tint';
+            } else if (reminder.reminder_type === 'exercise') {
+                icon = 'running';
+            }
+
+            // Format time
+            const timeParts = reminder.time.split(':');
+            let hour = parseInt(timeParts[0]);
+            const minute = timeParts[1];
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            hour = hour % 12 || 12;
+            const formattedTime = `${hour}:${minute} ${ampm}`;
+
+            html += `
+                <li class="reminder-item">
+                    <div class="reminder-icon reminder-icon-${reminder.reminder_type}">
+                        <i class="fas fa-${icon}"></i>
+                    </div>
+                    <div class="reminder-content">
+                        <div class="reminder-time">${formattedTime}</div>
+                        <div class="reminder-title">${reminder.title}</div>
+                    </div>
+                </li>
+            `;
+        });
+
+        html += '</ul>';
+
+        remindersWidget.innerHTML = html;
+    }
+
+    // Load reminders when the page loads
+    loadTodaysReminders();
+</script>
+
+<style>
+    .reminders-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .reminder-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .reminder-item:last-child {
+        border-bottom: none;
+    }
+
+    .reminder-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        flex-shrink: 0;
+    }
+
+    .reminder-icon-meal {
+        background-color: rgba(255, 152, 0, 0.1);
+        color: #ff9800;
+    }
+
+    .reminder-icon-water {
+        background-color: rgba(33, 150, 243, 0.1);
+        color: #2196f3;
+    }
+
+    .reminder-icon-exercise {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #4caf50;
+    }
+
+    .reminder-content {
+        flex-grow: 1;
+    }
+
+    .reminder-time {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--dark-color);
+    }
+
+    .reminder-title {
+        font-size: 13px;
+        color: #666;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top-color: var(--primary-color);
+        animation: spin 1s ease-in-out infinite;
+        margin: 20px auto;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+</style>

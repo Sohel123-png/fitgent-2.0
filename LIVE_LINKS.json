@@ -1,0 +1,33 @@
+{
+  "project": "FitGent 2.0",
+  "description": "AI-Powered Fitness Platform with Smartwatch Integration",
+  "demo_url": "http://localhost:8080",
+  "backend_url": "http://localhost:5000",
+  "frontend_url": "http://localhost:3000",
+  "features": [
+    "Smartwatch Integration (Google Fit, Apple Health, Mi Band)",
+    "AI Health Recommendations",
+    "Gaming-style Dashboard",
+    "Real-time Health Analytics",
+    "JWT Authentication",
+    "RESTful API"
+  ],
+  "tech_stack": {
+    "frontend": [
+      "React 19",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion"
+    ],
+    "backend": [
+      "Flask",
+      "SQLAlchemy",
+      "JWT",
+      "Google Fit API"
+    ],
+    "database": [
+      "SQLite",
+      "PostgreSQL"
+    ]
+  }
+}

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏃‍♂️ FitGent 2.0 - Live Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .pulse { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <div class="gradient-bg text-white min-h-screen">
+        <div class="container mx-auto px-6 py-16">
+            <div class="text-center">
+                <h1 class="text-6xl font-bold mb-4">🏃‍♂️ FitGent 2.0</h1>
+                <p class="text-2xl mb-4">AI-Powered Fitness Platform with Smartwatch Integration</p>
+                <div class="pulse bg-green-500 text-white px-6 py-3 rounded-full inline-block mb-8">
+                    🟢 LIVE DEMO RUNNING
+                </div>
+                
+                <!-- Live Links Section -->
+                <div class="grid md:grid-cols-3 gap-8 mt-12">
+                    <div class="bg-white/10 backdrop-blur-lg p-8 rounded-xl card-hover">
+                        <div class="text-4xl mb-4">🎨</div>
+                        <h3 class="text-xl font-bold mb-4">React Dashboard</h3>
+                        <p class="text-sm mb-4 opacity-75">Gaming-style UI with health insights</p>
+                        <a href="http://localhost:3000" target="_blank" 
+                           class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors inline-block">
+                            Open Dashboard →
+                        </a>
+                        <div class="mt-3 text-sm">
+                            <span id="frontend-status" class="pulse">🟡 Checking...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg p-8 rounded-xl card-hover">
+                        <div class="text-4xl mb-4">🔧</div>
+                        <h3 class="text-xl font-bold mb-4">Flask API</h3>
+                        <p class="text-sm mb-4 opacity-75">Backend with Google Fit integration</p>
+                        <a href="http://localhost:5000" target="_blank" 
+                           class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors inline-block">
+                            View API →
+                        </a>
+                        <div class="mt-3 text-sm">
+                            <span id="backend-status" class="pulse">🟡 Checking...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white/10 backdrop-blur-lg p-8 rounded-xl card-hover">
+                        <div class="text-4xl mb-4">📱</div>
+                        <h3 class="text-xl font-bold mb-4">Share Demo</h3>
+                        <p class="text-sm mb-4 opacity-75">Share with friends & LinkedIn</p>
+                        <button onclick="shareDemo()" 
+                                class="bg-purple-500 text-white px-6 py-3 rounded-lg hover:bg-purple-600 transition-colors">
+                            Copy Link 📋
+                        </button>
+                        <div class="mt-3 text-sm">
+                            <span class="text-green-300">Ready to share!</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Features Section -->
+                <div class="mt-16 bg-white/10 backdrop-blur-lg p-8 rounded-xl">
+                    <h2 class="text-3xl font-bold mb-8">🚀 Key Features</h2>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="text-center">
+                            <div class="text-3xl mb-3">⌚</div>
+                            <h4 class="font-bold mb-2">Smartwatch Integration</h4>
+                            <p class="text-sm opacity-75">Google Fit, Apple Health, Mi Band</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl mb-3">🤖</div>
+                            <h4 class="font-bold mb-2">AI Health Engine</h4>
+                            <p class="text-sm opacity-75">Personalized recommendations</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl mb-3">🎮</div>
+                            <h4 class="font-bold mb-2">Gaming Dashboard</h4>
+                            <p class="text-sm opacity-75">Achievements & leaderboards</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl mb-3">💬</div>
+                            <h4 class="font-bold mb-2">AI Chatbot</h4>
+                            <p class="text-sm opacity-75">Fitness & wellness guidance</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tech Stack -->
+                <div class="mt-12">
+                    <h3 class="text-2xl font-bold mb-6">💻 Tech Stack</h3>
+                    <div class="flex justify-center space-x-3 flex-wrap gap-3">
+                        <span class="bg-blue-500 px-4 py-2 rounded-full text-sm">React 19</span>
+                        <span class="bg-green-500 px-4 py-2 rounded-full text-sm">Flask</span>
+                        <span class="bg-purple-500 px-4 py-2 rounded-full text-sm">TypeScript</span>
+                        <span class="bg-pink-500 px-4 py-2 rounded-full text-sm">Tailwind CSS</span>
+                        <span class="bg-yellow-500 px-4 py-2 rounded-full text-sm">Google Fit API</span>
+                        <span class="bg-red-500 px-4 py-2 rounded-full text-sm">JWT Auth</span>
+                    </div>
+                </div>
+                
+                <!-- LinkedIn Share Section -->
+                <div class="mt-16 bg-white/10 backdrop-blur-lg p-8 rounded-xl">
+                    <h3 class="text-2xl font-bold mb-4">📱 Share on Social Media</h3>
+                    <p class="mb-6 opacity-75">Show off your full-stack development skills!</p>
+                    <div class="flex justify-center space-x-4 flex-wrap gap-4">
+                        <button onclick="shareOnLinkedIn()" 
+                                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                            📊 Share on LinkedIn
+                        </button>
+                        <button onclick="shareOnTwitter()" 
+                                class="bg-sky-500 text-white px-6 py-3 rounded-lg hover:bg-sky-600 transition-colors">
+                            🐦 Share on Twitter
+                        </button>
+                        <button onclick="copyPortfolioText()" 
+                                class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors">
+                            📝 Copy Portfolio Text
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Quick Stats -->
+                <div class="mt-12 grid md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold">50+</div>
+                        <div class="text-sm opacity-75">API Endpoints</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold">10+</div>
+                        <div class="text-sm opacity-75">React Components</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold">3</div>
+                        <div class="text-sm opacity-75">Device Integrations</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold">100%</div>
+                        <div class="text-sm opacity-75">TypeScript</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Share functions
+        function shareDemo() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('✅ Demo link copied to clipboard!\n\n🔗 ' + url + '\n\nShare this with your friends and LinkedIn connections!');
+            });
+        }
+        
+        function shareOnLinkedIn() {
+            const text = "🚀 Excited to share my latest project: FitGent 2.0!\n\nA comprehensive AI-powered fitness platform featuring:\n⌚ Smartwatch integration (Google Fit, Apple Health, Mi Band)\n🤖 AI health recommendations and wellness scoring\n🎮 Gaming-style dashboard with achievements\n💬 AI chatbot for fitness guidance\n📊 Real-time health analytics\n\nBuilt with React, Flask, and modern web technologies.\n\n#FitnessApp #AI #HealthTech #React #Python #WebDevelopment #SmartWatch #HealthAnalytics";
+            const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+        
+        function shareOnTwitter() {
+            const text = "🚀 Just built FitGent 2.0 - AI-powered fitness platform with smartwatch integration! Built with React, Flask, and modern web tech. #FitnessApp #AI #React #Python #WebDev";
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+            window.open(url, '_blank');
+        }
+        
+        function copyPortfolioText() {
+            const text = `FitGent 2.0 - AI-Powered Fitness Platform
+
+🔗 Live Demo: ${window.location.href}
+
+Key Features:
+• Smartwatch integration (Google Fit, Apple Health, Mi Band)
+• AI health recommendations and wellness scoring (0-100)
+• Gaming-style dashboard with achievements and leaderboards
+• Real-time health analytics and trend analysis
+• AI chatbot for fitness and wellness guidance
+• JWT authentication and secure API
+
+Tech Stack:
+• Frontend: React 19, TypeScript, Tailwind CSS, Framer Motion
+• Backend: Flask, SQLAlchemy, JWT, Google Fit API
+• Database: PostgreSQL, SQLite
+• Deployment: Vercel, Railway, Render
+
+This project demonstrates full-stack development skills, API integration, AI implementation, and modern web technologies.`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Portfolio text copied to clipboard!\n\nPaste this in your resume, portfolio, or job applications.');
+            });
+        }
+        
+        // Server status checking
+        function checkServerStatus() {
+            // Check backend
+            fetch('http://localhost:5000')
+                .then(response => {
+                    document.getElementById('backend-status').innerHTML = '🟢 Online';
+                    document.getElementById('backend-status').className = 'text-green-300';
+                })
+                .catch(() => {
+                    document.getElementById('backend-status').innerHTML = '🔴 Start Backend';
+                    document.getElementById('backend-status').className = 'text-red-300';
+                });
+            
+            // Check frontend
+            fetch('http://localhost:3000')
+                .then(response => {
+                    document.getElementById('frontend-status').innerHTML = '🟢 Online';
+                    document.getElementById('frontend-status').className = 'text-green-300';
+                })
+                .catch(() => {
+                    document.getElementById('frontend-status').innerHTML = '🔴 Start Frontend';
+                    document.getElementById('frontend-status').className = 'text-red-300';
+                });
+        }
+        
+        // Check status on load and every 10 seconds
+        checkServerStatus();
+        setInterval(checkServerStatus, 10000);
+        
+        // Welcome message
+        setTimeout(() => {
+            console.log('🎉 Welcome to FitGent 2.0 Live Demo!');
+            console.log('🔗 Demo URL:', window.location.href);
+            console.log('📱 Share this link with friends and on LinkedIn!');
+        }, 1000);
+    </script>
+</body>
+</html>

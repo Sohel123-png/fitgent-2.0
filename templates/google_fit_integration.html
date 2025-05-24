@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Fit Integration - FitGen</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='apple-design.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="{{ url_for('static', filename='theme-switcher.js') }}" defer></script>
+    <style>
+        .integration-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: var(--apple-card-background);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .integration-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle at top right, rgba(0, 122, 255, 0.05), transparent 70%);
+            pointer-events: none;
+        }
+
+        .integration-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .integration-icon {
+            font-size: 50px;
+            color: var(--apple-blue);
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .integration-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--apple-primary-text);
+            margin-bottom: 10px;
+        }
+
+        .integration-subtitle {
+            font-size: 16px;
+            color: var(--apple-secondary-text);
+            margin-bottom: 30px;
+        }
+
+        .integration-steps {
+            margin-bottom: 30px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: rgba(0, 122, 255, 0.05);
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .step-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background-color: var(--apple-blue);
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--apple-primary-text);
+            margin-bottom: 5px;
+        }
+
+        .step-description {
+            font-size: 14px;
+            color: var(--apple-secondary-text);
+            line-height: 1.5;
+        }
+
+        .integration-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: linear-gradient(to right, var(--apple-blue), var(--apple-indigo));
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+        }
+
+        .action-btn:disabled {
+            background: linear-gradient(to right, #ccc, #999);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .action-btn.disconnect {
+            background: linear-gradient(to right, var(--apple-red), #ff6b6b);
+        }
+
+        .action-btn.disconnect:hover {
+            box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+        }
+
+        .status-container {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            background-color: rgba(0, 122, 255, 0.05);
+            text-align: center;
+        }
+
+        .status-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .status-icon.connected {
+            color: var(--apple-green);
+        }
+
+        .status-icon.disconnected {
+            color: var(--apple-red);
+        }
+
+        .status-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .status-details {
+            font-size: 14px;
+            color: var(--apple-secondary-text);
+        }
+
+        .data-preview {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .data-card {
+            padding: 15px;
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .data-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .data-icon {
+            font-size: 24px;
+            color: var(--apple-blue);
+            margin-bottom: 10px;
+        }
+
+        .data-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--apple-primary-text);
+            margin-bottom: 5px;
+        }
+
+        .data-label {
+            font-size: 12px;
+            color: var(--apple-secondary-text);
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            font-size: 14px;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        .alert-error {
+            background-color: rgba(255, 59, 48, 0.1);
+            color: var(--apple-red);
+            border-left: 4px solid var(--apple-red);
+        }
+
+        .alert-success {
+            background-color: rgba(52, 199, 89, 0.1);
+            color: var(--apple-green);
+            border-left: 4px solid var(--apple-green);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Anime character */
+        .anime-character {
+            position: absolute;
+            top: -30px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            opacity: 0.7;
+            z-index: 1;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="integration-container">
+            <img src="{{ url_for('static', filename='images/anime-character-2.svg') }}" alt="Anime Character" class="anime-character">
+            <div class="integration-header">
+                <div class="integration-icon">
+                    <i class="fab fa-google"></i>
+                </div>
+                <h1 class="integration-title">Google Fit Integration</h1>
+                <p class="integration-subtitle">Connect your Google Fit account to sync your fitness data</p>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <div class="integration-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Connect Your Account</h3>
+                        <p class="step-description">Click the "Connect to Google Fit" button below to authorize FitGen to access your fitness data from Google Fit.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Grant Permissions</h3>
+                        <p class="step-description">You'll be redirected to Google's authorization page. Select the Google account you use with Google Fit and grant the requested permissions.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Sync Your Data</h3>
+                        <p class="step-description">Once connected, your fitness data will be automatically synced with FitGen. You can manually sync anytime by clicking the "Sync Data" button.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="statusContainer" class="status-container">
+                <div id="statusIcon" class="status-icon disconnected">
+                    <i class="fas fa-unlink"></i>
+                </div>
+                <div id="statusText" class="status-text">Not Connected</div>
+                <div id="statusDetails" class="status-details">Connect your Google Fit account to start syncing your fitness data.</div>
+            </div>
+
+            <div id="dataPreview" class="data-preview" style="display: none;">
+                <div class="data-card">
+                    <div class="data-icon">
+                        <i class="fas fa-walking"></i>
+                    </div>
+                    <div id="stepsValue" class="data-value">0</div>
+                    <div class="data-label">Steps Today</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div id="caloriesValue" class="data-value">0</div>
+                    <div class="data-label">Calories Burned</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-icon">
+                        <i class="fas fa-weight"></i>
+                    </div>
+                    <div id="weightValue" class="data-value">0</div>
+                    <div class="data-label">Weight (kg)</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div id="heartRateValue" class="data-value">0</div>
+                    <div class="data-label">Resting Heart Rate</div>
+                </div>
+            </div>
+
+            <div class="integration-actions">
+                <button id="connectBtn" class="action-btn">
+                    <i class="fas fa-link"></i> Connect to Google Fit
+                </button>
+                <button id="syncBtn" class="action-btn" style="display: none;">
+                    <i class="fas fa-sync"></i> Sync Data
+                </button>
+                <button id="disconnectBtn" class="action-btn disconnect" style="display: none;">
+                    <i class="fas fa-unlink"></i> Disconnect
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const connectBtn = document.getElementById('connectBtn');
+            const syncBtn = document.getElementById('syncBtn');
+            const disconnectBtn = document.getElementById('disconnectBtn');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+            const statusDetails = document.getElementById('statusDetails');
+            const dataPreview = document.getElementById('dataPreview');
+            const alertContainer = document.getElementById('alertContainer');
+
+            // Check if user is logged in
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/login';
+                return;
+            }
+
+            // Check connection status
+            checkConnectionStatus();
+
+            // Connect button click handler
+            connectBtn.addEventListener('click', function() {
+                connectToGoogleFit();
+            });
+
+            // Sync button click handler
+            syncBtn.addEventListener('click', function() {
+                syncData();
+            });
+
+            // Disconnect button click handler
+            disconnectBtn.addEventListener('click', function() {
+                disconnectGoogleFit();
+            });
+
+            // Function to check connection status
+            function checkConnectionStatus() {
+                fetch('/google-fit/data', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.connected) {
+                        // Update UI for connected state
+                        updateConnectedUI(data);
+                    } else {
+                        // Update UI for disconnected state
+                        updateDisconnectedUI();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking connection status:', error);
+                    showAlert('An error occurred while checking connection status.', 'error');
+                });
+            }
+
+            // Function to connect to Google Fit
+            function connectToGoogleFit() {
+                connectBtn.disabled = true;
+                connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+
+                fetch('/google-fit/authorize', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.authorization_url) {
+                        // Redirect to Google authorization page
+                        window.location.href = data.authorization_url;
+                    } else {
+                        showAlert(data.msg || 'Failed to generate authorization URL.', 'error');
+                        connectBtn.disabled = false;
+                        connectBtn.innerHTML = '<i class="fas fa-link"></i> Connect to Google Fit';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error connecting to Google Fit:', error);
+                    showAlert('An error occurred while connecting to Google Fit.', 'error');
+                    connectBtn.disabled = false;
+                    connectBtn.innerHTML = '<i class="fas fa-link"></i> Connect to Google Fit';
+                });
+            }
+
+            // Function to sync data
+            function syncData() {
+                syncBtn.disabled = true;
+                syncBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+
+                fetch('/google-fit/sync', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.connected && data.has_data) {
+                        updateConnectedUI(data);
+                        showAlert('Data synced successfully!', 'success');
+                    } else if (data.connected) {
+                        showAlert('No fitness data available to sync.', 'error');
+                    } else {
+                        updateDisconnectedUI();
+                        showAlert('Not connected to Google Fit.', 'error');
+                    }
+
+                    syncBtn.disabled = false;
+                    syncBtn.innerHTML = '<i class="fas fa-sync"></i> Sync Data';
+                })
+                .catch(error => {
+                    console.error('Error syncing data:', error);
+                    showAlert('An error occurred while syncing data.', 'error');
+                    syncBtn.disabled = false;
+                    syncBtn.innerHTML = '<i class="fas fa-sync"></i> Sync Data';
+                });
+            }
+
+            // Function to disconnect from Google Fit
+            function disconnectGoogleFit() {
+                disconnectBtn.disabled = true;
+                disconnectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Disconnecting...';
+
+                fetch('/google-fit/disconnect', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateDisconnectedUI();
+                    showAlert(data.msg || 'Disconnected from Google Fit.', 'success');
+                    disconnectBtn.disabled = false;
+                    disconnectBtn.innerHTML = '<i class="fas fa-unlink"></i> Disconnect';
+                })
+                .catch(error => {
+                    console.error('Error disconnecting from Google Fit:', error);
+                    showAlert('An error occurred while disconnecting from Google Fit.', 'error');
+                    disconnectBtn.disabled = false;
+                    disconnectBtn.innerHTML = '<i class="fas fa-unlink"></i> Disconnect';
+                });
+            }
+
+            // Function to update UI for connected state
+            function updateConnectedUI(data) {
+                connectBtn.style.display = 'none';
+                syncBtn.style.display = 'block';
+                disconnectBtn.style.display = 'block';
+
+                statusIcon.className = 'status-icon connected';
+                statusIcon.innerHTML = '<i class="fas fa-link"></i>';
+                statusText.textContent = 'Connected';
+                statusDetails.textContent = 'Your Google Fit account is connected. Your fitness data is being synced.';
+
+                if (data.has_data) {
+                    dataPreview.style.display = 'grid';
+
+                    // Update data values
+                    document.getElementById('stepsValue').textContent = data.data.today_steps || 0;
+                    document.getElementById('caloriesValue').textContent = data.data.today_calories || 0;
+                    document.getElementById('weightValue').textContent = data.data.latest_weight || 0;
+                    document.getElementById('heartRateValue').textContent = data.data.avg_resting_heart_rate || 0;
+                }
+            }
+
+            // Function to update UI for disconnected state
+            function updateDisconnectedUI() {
+                connectBtn.style.display = 'block';
+                syncBtn.style.display = 'none';
+                disconnectBtn.style.display = 'none';
+                dataPreview.style.display = 'none';
+
+                statusIcon.className = 'status-icon disconnected';
+                statusIcon.innerHTML = '<i class="fas fa-unlink"></i>';
+                statusText.textContent = 'Not Connected';
+                statusDetails.textContent = 'Connect your Google Fit account to start syncing your fitness data.';
+            }
+
+            // Function to show alert
+            function showAlert(message, type) {
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type}`;
+                alert.textContent = message;
+
+                alertContainer.innerHTML = '';
+                alertContainer.appendChild(alert);
+
+                // Remove alert after 5 seconds
+                setTimeout(() => {
+                    alert.remove();
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

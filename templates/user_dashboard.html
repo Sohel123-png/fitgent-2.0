@@ -3,16 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitTrack - User Dashboard</title>
+    <title>FitGen 2.0 - Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='apple-design.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='theme-switcher.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='anime-characters.js') }}" defer></script>
     <style>
-        /* Dashboard specific styles */
+        /* Dashboard specific styles - Apple-inspired with anime elements */
+        body {
+            background-color: var(--apple-background);
+            color: var(--apple-primary-text);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://i.imgur.com/JYd6Gj3.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.03;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+
+        body.dark-mode::before {
+            opacity: 0.05;
+        }
+
         .dashboard-container {
             max-width: 1200px;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: var(--apple-card-background);
             padding: 30px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin: 30px auto;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .anime-character-corner {
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-container:hover .anime-character-corner {
+            transform: translateY(-10px) rotate(-5deg);
         }
 
         .dashboard-header {
@@ -21,18 +74,24 @@
             align-items: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid var(--apple-separator);
+            position: relative;
         }
 
         .dashboard-title {
             display: flex;
             align-items: center;
             gap: 15px;
+            animation: slideIn 0.5s ease-out forwards;
         }
 
         .dashboard-title h1 {
             margin: 0;
             padding: 0;
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--apple-primary-text);
+            transition: color 0.3s ease;
         }
 
         .dashboard-title h1::after {
@@ -41,23 +100,45 @@
 
         .dashboard-icon {
             font-size: 30px;
-            color: var(--primary-color);
+            color: var(--apple-blue);
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .dashboard-icon:hover {
+            transform: scale(1.1) rotate(10deg);
         }
 
         .user-welcome {
             font-size: 16px;
-            color: var(--dark-color);
-            opacity: 0.8;
+            color: var(--apple-secondary-text);
+            opacity: 0.9;
+            transition: color 0.3s ease;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .dashboard-actions {
             display: flex;
-            gap: 15px;
+            gap: 12px;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: 0.3s;
+            opacity: 0;
         }
 
         .action-btn {
-            padding: 8px 15px;
-            border-radius: 50px;
+            padding: 10px 16px;
+            border-radius: var(--radius-pill);
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -65,54 +146,136 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            text-decoration: none;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .action-btn:hover::before {
+            transform: translateY(0);
+        }
+
+        .action-btn:active {
+            transform: translateY(2px);
         }
 
         .primary-btn {
-            background: linear-gradient(45deg, var(--primary-color), #ff7043);
+            background: linear-gradient(45deg, var(--apple-blue), var(--apple-teal));
             color: white;
             border: none;
         }
 
+        .primary-btn.ai-assistant {
+            background: linear-gradient(45deg, var(--apple-purple), var(--apple-indigo));
+        }
+
+        .primary-btn.notifications {
+            background: linear-gradient(45deg, var(--apple-orange), var(--apple-pink));
+        }
+
+        .primary-btn.google-fit {
+            background: linear-gradient(45deg, var(--apple-red), var(--apple-orange));
+        }
+
         .secondary-btn {
-            background: linear-gradient(45deg, var(--secondary-color), #64b5f6);
+            background: linear-gradient(45deg, var(--apple-teal), var(--apple-blue));
             color: white;
             border: none;
         }
 
         .logout-btn {
-            background: linear-gradient(45deg, #f44336, #e57373);
+            background: linear-gradient(45deg, var(--apple-red), var(--apple-pink));
             color: white;
             border: none;
         }
 
-        /* Dashboard layout */
+        /* Dashboard layout - Apple-inspired */
         .dashboard-content {
             display: grid;
             grid-template-columns: 300px 1fr;
             gap: 30px;
+            position: relative;
         }
 
         /* Sidebar */
         .dashboard-sidebar {
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background-color: var(--apple-card-background);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-md);
             height: fit-content;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: 0.4s;
+            opacity: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-sidebar:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dashboard-sidebar::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--apple-blue), var(--apple-purple));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .dashboard-sidebar:hover::after {
+            opacity: 1;
         }
 
         .profile-section {
             text-align: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid var(--apple-separator);
+            position: relative;
+        }
+
+        .profile-anime {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 60px;
+            height: 60px;
+            opacity: 0.7;
+            transform: rotate(10deg);
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .profile-section:hover .profile-anime {
+            transform: rotate(0deg) translateY(-5px);
+            opacity: 0.9;
         }
 
         .profile-picture {
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background-color: var(--primary-color);
+            background-color: var(--apple-blue);
             margin: 0 auto 15px;
             display: flex;
             align-items: center;
@@ -120,6 +283,26 @@
             font-size: 50px;
             color: white;
             overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 122, 255, 0.3);
+            border: 3px solid white;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .profile-picture::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), transparent);
+            pointer-events: none;
+        }
+
+        .profile-picture:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.4);
         }
 
         .profile-picture img {
@@ -131,25 +314,32 @@
         .profile-name {
             font-size: 20px;
             font-weight: 700;
-            color: var(--dark-color);
+            color: var(--apple-primary-text);
             margin-bottom: 5px;
+            transition: color 0.3s ease;
         }
 
         .profile-email {
             font-size: 14px;
-            color: var(--dark-color);
-            opacity: 0.7;
+            color: var(--apple-secondary-text);
             margin-bottom: 15px;
+            transition: color 0.3s ease;
         }
 
         .profile-level {
             display: inline-block;
-            padding: 5px 15px;
-            background-color: rgba(255, 87, 34, 0.1);
-            color: var(--primary-color);
-            border-radius: 50px;
+            padding: 6px 16px;
+            background-color: rgba(0, 122, 255, 0.1);
+            color: var(--apple-blue);
+            border-radius: var(--radius-pill);
             font-size: 14px;
             font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .profile-level:hover {
+            background-color: rgba(0, 122, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .profile-stats {
@@ -183,70 +373,172 @@
         }
 
         .menu-item {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
         }
+
+        .menu-item:nth-child(1) { animation-delay: 0.5s; }
+        .menu-item:nth-child(2) { animation-delay: 0.55s; }
+        .menu-item:nth-child(3) { animation-delay: 0.6s; }
+        .menu-item:nth-child(4) { animation-delay: 0.65s; }
+        .menu-item:nth-child(5) { animation-delay: 0.7s; }
+        .menu-item:nth-child(6) { animation-delay: 0.75s; }
+        .menu-item:nth-child(7) { animation-delay: 0.8s; }
+        .menu-item:nth-child(8) { animation-delay: 0.85s; }
+        .menu-item:nth-child(9) { animation-delay: 0.9s; }
+        .menu-item:nth-child(10) { animation-delay: 0.95s; }
+        .menu-item:nth-child(11) { animation-delay: 1s; }
 
         .menu-link {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 15px;
-            border-radius: 10px;
-            color: var(--dark-color);
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            color: var(--apple-primary-text);
             text-decoration: none;
             transition: all 0.3s ease;
             font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--apple-blue), var(--apple-purple));
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .menu-link:hover, .menu-link.active {
-            background-color: rgba(255, 87, 34, 0.1);
-            color: var(--primary-color);
+            background-color: rgba(0, 122, 255, 0.1);
+            color: var(--apple-blue);
+            transform: translateX(4px);
+        }
+
+        .menu-link:hover::before, .menu-link.active::before {
+            opacity: 1;
         }
 
         .menu-icon {
             font-size: 18px;
             width: 24px;
             text-align: center;
+            color: var(--apple-secondary-text);
+            transition: color 0.3s ease, transform 0.3s ease;
         }
 
-        /* Main content */
+        .menu-link:hover .menu-icon, .menu-link.active .menu-icon {
+            color: var(--apple-blue);
+            transform: scale(1.1);
+        }
+
+        /* Main content - Apple-inspired */
         .dashboard-main {
             display: grid;
             grid-template-rows: auto 1fr;
             gap: 30px;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: 0.3s;
+            opacity: 0;
         }
 
         .content-section {
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 15px;
+            background-color: var(--apple-card-background);
+            border-radius: var(--radius-lg);
             padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-md);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .content-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at top right, rgba(0, 122, 255, 0.05), transparent 70%);
+            pointer-events: none;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             padding-bottom: 15px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid var(--apple-separator);
+            position: relative;
+        }
+
+        .section-anime {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 50px;
+            height: 50px;
+            opacity: 0;
+            transform: rotate(10deg);
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .content-section:hover .section-anime {
+            opacity: 0.7;
+            transform: rotate(0deg);
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
-            color: var(--dark-color);
+            color: var(--apple-primary-text);
             margin: 0;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--apple-blue), var(--apple-purple));
+            transition: width 0.3s ease;
+        }
+
+        .content-section:hover .section-title::after {
+            width: 100%;
         }
 
         .section-icon {
-            color: var(--primary-color);
+            color: var(--apple-blue);
+            transition: color 0.3s ease, transform 0.3s ease;
         }
 
-        /* Health stats section */
+        .content-section:hover .section-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Health stats section - Apple-inspired */
         .health-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -255,15 +547,23 @@
         }
 
         .health-card {
-            background: linear-gradient(135deg, #fff, #f5f5f5);
-            border-radius: 15px;
+            background: var(--apple-card-background);
+            border-radius: var(--radius-lg);
             padding: 20px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-sm);
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
         }
+
+        .health-card:nth-child(1) { animation-delay: 0.4s; }
+        .health-card:nth-child(2) { animation-delay: 0.5s; }
+        .health-card:nth-child(3) { animation-delay: 0.6s; }
+        .health-card:nth-child(4) { animation-delay: 0.7s; }
+        .health-card:nth-child(5) { animation-delay: 0.8s; }
 
         .health-card::before {
             content: '';
@@ -272,31 +572,80 @@
             left: 0;
             width: 5px;
             height: 100%;
-            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(to bottom, var(--apple-blue), var(--apple-teal));
+            opacity: 0.7;
+            transition: width 0.3s ease;
+        }
+
+        .health-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background: linear-gradient(to right, var(--apple-blue-dark), transparent);
+            opacity: 0.05;
+            transition: height 0.3s ease;
         }
 
         .health-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-md);
+        }
+
+        .health-card:hover::before {
+            width: 7px;
+        }
+
+        .health-card:hover::after {
+            height: 100%;
         }
 
         .health-icon {
             font-size: 30px;
-            color: var(--primary-color);
+            color: var(--apple-blue);
             margin-bottom: 15px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .health-card:hover .health-icon {
+            transform: scale(1.1) rotate(5deg);
+            color: var(--apple-indigo);
         }
 
         .health-value {
             font-size: 28px;
             font-weight: 700;
-            color: var(--dark-color);
+            color: var(--apple-primary-text);
             margin: 5px 0;
+            transition: color 0.3s ease;
+            position: relative;
+            display: inline-block;
+        }
+
+        .health-value::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--apple-blue), var(--apple-purple));
+            transition: width 0.3s ease;
+        }
+
+        .health-card:hover .health-value::after {
+            width: 80%;
         }
 
         .health-label {
             font-size: 14px;
-            color: #666;
+            color: var(--apple-secondary-text);
             margin-bottom: 10px;
+            transition: color 0.3s ease;
         }
 
         .health-trend {
@@ -305,21 +654,32 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
+            padding: 5px 10px;
+            border-radius: var(--radius-pill);
+            background-color: rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            margin: 0 auto;
+            width: fit-content;
+        }
+
+        .health-card:hover .health-trend {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
         }
 
         .trend-up {
-            color: #4caf50;
+            color: var(--apple-green);
         }
 
         .trend-down {
-            color: #f44336;
+            color: var(--apple-red);
         }
 
         .trend-neutral {
-            color: #ff9800;
+            color: var(--apple-orange);
         }
 
-        /* Diet plan section */
+        /* Diet plan section - Apple-inspired */
         .diet-plans {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -327,43 +687,97 @@
         }
 
         .meal-card {
-            background-color: white;
-            border-radius: 15px;
+            background-color: var(--apple-card-background);
+            border-radius: var(--radius-lg);
             padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-sm);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .meal-card:nth-child(1) { animation-delay: 0.6s; }
+        .meal-card:nth-child(2) { animation-delay: 0.7s; }
+        .meal-card:nth-child(3) { animation-delay: 0.8s; }
+
+        .meal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle at top right, rgba(0, 122, 255, 0.05), transparent 70%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .meal-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: var(--shadow-md);
+        }
+
+        .meal-card:hover::before {
+            opacity: 1;
         }
 
         .meal-header {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid var(--apple-separator);
+            position: relative;
+        }
+
+        .meal-anime {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 40px;
+            height: 40px;
+            opacity: 0;
+            transform: rotate(10deg);
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .meal-card:hover .meal-anime {
+            opacity: 0.7;
+            transform: rotate(0deg);
         }
 
         .meal-icon {
             font-size: 24px;
-            color: var(--primary-color);
+            color: var(--apple-blue);
+            transition: all 0.3s ease;
+        }
+
+        .meal-card:hover .meal-icon {
+            transform: scale(1.1) rotate(5deg);
+            color: var(--apple-indigo);
         }
 
         .meal-title {
             font-size: 18px;
             font-weight: 700;
-            color: var(--dark-color);
+            color: var(--apple-primary-text);
             margin: 0;
+            transition: color 0.3s ease;
         }
 
         .meal-time {
             margin-left: auto;
             font-size: 14px;
-            color: #666;
+            color: var(--apple-secondary-text);
+            transition: color 0.3s ease;
+            padding: 3px 10px;
+            border-radius: var(--radius-pill);
+            background-color: rgba(0, 122, 255, 0.1);
         }
 
         .meal-items {
@@ -464,6 +878,9 @@
 </head>
 <body>
     <div class="container dashboard-container">
+        <!-- Anime Character in Corner -->
+        <img src="{{ url_for('static', filename='images/anime-character-1.svg') }}" alt="Anime Fitness Character" class="anime-character-corner">
+
         <!-- Dashboard Header -->
         <div class="dashboard-header">
             <div class="dashboard-title">
@@ -471,27 +888,27 @@
                     <i class="fas fa-dumbbell"></i>
                 </div>
                 <div>
-                    <h1>FitTrack Dashboard</h1>
+                    <h1>FitGen 2.0 Dashboard</h1>
                     <p class="user-welcome">Welcome back, <span id="userName">User</span>!</p>
                 </div>
             </div>
 
             <div class="dashboard-actions">
-                <a href="{{ url_for('chatbot.chatbot_page') }}" class="action-btn primary-btn" style="background: linear-gradient(45deg, #9c27b0, #673ab7);">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="action-btn primary-btn ai-assistant">
                     <i class="fas fa-robot"></i> AI Assistant
                 </a>
-                <a href="{{ url_for('notifications.notifications_page') }}" class="action-btn primary-btn" style="background: linear-gradient(45deg, #ff9800, #ff5722);">
+                <a href="{{ url_for('notifications.notifications_page') }}" class="action-btn primary-btn notifications">
                     <i class="fas fa-bell"></i> Notifications
                 </a>
                 {% if has_google_fit %}
-                <button type="button" id="syncGoogleFitBtn" class="action-btn primary-btn">
+                <button type="button" id="syncGoogleFitBtn" class="action-btn primary-btn google-fit">
                     <i class="fas fa-sync-alt"></i> Sync Google Fit
                 </button>
                 <a href="{{ url_for('auth.revoke_google_fit') }}" class="action-btn secondary-btn">
                     <i class="fas fa-unlink"></i> Disconnect Google Fit
                 </a>
                 {% else %}
-                <a href="{{ url_for('auth.authorize_google_fit') }}" class="action-btn primary-btn">
+                <a href="{{ url_for('auth.authorize_google_fit') }}" class="action-btn primary-btn google-fit">
                     <i class="fab fa-google"></i> Connect Google Fit
                 </a>
                 {% endif %}
@@ -509,6 +926,7 @@
             <!-- Sidebar -->
             <div class="dashboard-sidebar">
                 <div class="profile-section">
+                    <img src="{{ url_for('static', filename='images/anime-character-2.svg') }}" alt="Anime Character" class="profile-anime">
                     <div class="profile-picture">
                         <i class="fas fa-user"></i>
                     </div>
@@ -581,15 +999,33 @@
                         </a>
                     </li>
                     <li class="menu-item">
+                        <a href="{{ url_for('google_fit_api.google_fit_page') }}" class="menu-link">
+                            <span class="menu-icon"><i class="fab fa-google"></i></span>
+                            Google Fit
+                        </a>
+                    </li>
+                    <li class="menu-item">
                         <a href="{{ url_for('chatbot.chatbot_page') }}" class="menu-link">
                             <span class="menu-icon"><i class="fas fa-robot"></i></span>
                             AI Assistant
                         </a>
                     </li>
                     <li class="menu-item">
+                        <a href="{{ url_for('auth.modern_dashboard') }}" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-star"></i></span>
+                            FitGen 2.0
+                        </a>
+                    </li>
+                    <li class="menu-item">
                         <a href="{{ url_for('notifications.notifications_page') }}" class="menu-link">
                             <span class="menu-icon"><i class="fas fa-bell"></i></span>
                             Notifications
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ url_for('gaming_dashboard') }}" class="menu-link">
+                            <span class="menu-icon"><i class="fas fa-gamepad"></i></span>
+                            Gaming Dashboard
                         </a>
                     </li>
                     <li class="menu-item">
@@ -606,6 +1042,7 @@
                 <!-- Health Stats Section -->
                 <div class="content-section">
                     <div class="section-header">
+                        <img src="{{ url_for('static', filename='images/anime-character-2.svg') }}" alt="Anime Character" class="section-anime">
                         <h2 class="section-title">
                             <i class="fas fa-heartbeat section-icon"></i>
                             Health Statistics
@@ -748,6 +1185,7 @@
                 <!-- Diet Plan Section -->
                 <div class="content-section">
                     <div class="section-header">
+                        <img src="{{ url_for('static', filename='images/anime-character-1.svg') }}" alt="Anime Character" class="section-anime">
                         <h2 class="section-title">
                             <i class="fas fa-utensils section-icon"></i>
                             Today's Diet Plan
@@ -760,6 +1198,7 @@
                     <div class="diet-plans">
                         <div class="meal-card">
                             <div class="meal-header">
+                                <img src="{{ url_for('static', filename='images/anime-character-2.svg') }}" alt="Anime Character" class="meal-anime">
                                 <div class="meal-icon">
                                     <i class="fas fa-coffee"></i>
                                 </div>
@@ -810,6 +1249,7 @@
 
                         <div class="meal-card">
                             <div class="meal-header">
+                                <img src="{{ url_for('static', filename='images/anime-character-1.svg') }}" alt="Anime Character" class="meal-anime">
                                 <div class="meal-icon">
                                     <i class="fas fa-drumstick-bite"></i>
                                 </div>
@@ -860,6 +1300,7 @@
 
                         <div class="meal-card">
                             <div class="meal-header">
+                                <img src="{{ url_for('static', filename='images/anime-character-2.svg') }}" alt="Anime Character" class="meal-anime">
                                 <div class="meal-icon">
                                     <i class="fas fa-fish"></i>
                                 </div>
@@ -919,6 +1360,66 @@
         if (!token) {
             window.location.href = '/login';
         }
+
+        // Initialize anime characters
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add random animations to anime characters
+            const animeElements = document.querySelectorAll('.anime-character-corner, .profile-anime, .section-anime, .meal-anime');
+            const animations = ['float', 'pulse', 'bounce'];
+
+            animeElements.forEach(element => {
+                const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+                element.classList.add(`anime-${randomAnimation}`);
+            });
+
+            // Add random quotes on hover for anime characters
+            const quotes = [
+                "Let's crush today's workout!",
+                "Stay hydrated and motivated!",
+                "You're doing amazing! Keep it up!",
+                "Remember, progress is progress, no matter how small!",
+                "Balanced nutrition is the foundation of fitness!",
+                "One more rep! You can do it!",
+                "Form is key - quality over quantity!",
+                "Push your limits, but listen to your body!"
+            ];
+
+            animeElements.forEach(element => {
+                element.addEventListener('mouseenter', function() {
+                    // Create quote bubble if it doesn't exist
+                    if (!this.nextElementSibling || !this.nextElementSibling.classList.contains('quote-bubble')) {
+                        const bubble = document.createElement('div');
+                        bubble.className = 'quote-bubble';
+                        bubble.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+                        this.parentNode.insertBefore(bubble, this.nextSibling);
+
+                        // Position the bubble
+                        const rect = this.getBoundingClientRect();
+                        bubble.style.position = 'absolute';
+                        bubble.style.top = `${this.offsetTop}px`;
+                        bubble.style.left = `${this.offsetLeft + this.offsetWidth}px`;
+                        bubble.style.zIndex = '1000';
+
+                        // Add styles for the bubble
+                        bubble.style.background = 'white';
+                        bubble.style.padding = '8px 12px';
+                        bubble.style.borderRadius = '10px';
+                        bubble.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                        bubble.style.maxWidth = '200px';
+                        bubble.style.fontSize = '14px';
+                        bubble.style.animation = 'fadeIn 0.3s forwards';
+                    }
+                });
+
+                element.addEventListener('mouseleave', function() {
+                    // Remove quote bubble
+                    const bubble = this.nextElementSibling;
+                    if (bubble && bubble.classList.contains('quote-bubble')) {
+                        bubble.remove();
+                    }
+                });
+            });
+        });
 
         // Function to decode JWT token
         function parseJwt(token) {

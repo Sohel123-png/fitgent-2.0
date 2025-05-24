@@ -30,9 +30,32 @@ SCOPES = [
 API_SERVICE_NAME = 'fitness'
 API_VERSION = 'v1'
 
-def get_client_secrets_file():
-    """Returns the path to the client secrets file."""
-    return os.path.join(os.path.dirname(__file__), CLIENT_SECRETS_FILE)
+def get_client_secrets():
+    """Returns the client secrets as a dict, either from file or environment variables."""
+    file_path = os.path.join(os.path.dirname(__file__), CLIENT_SECRETS_FILE)
+
+    # Try to load from file first
+    if os.path.exists(file_path):
+        try:
+            with open(file_path, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading client secrets file: {e}")
+
+    # If file doesn't exist or can't be loaded, use environment variables
+    return {
+        "web": {
+            "client_id": os.getenv("GOOGLE_CLIENT_ID", ""),
+            "project_id": os.getenv("GOOGLE_PROJECT_ID", ""),
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_secret": os.getenv("GOOGLE_CLIENT_SECRET", ""),
+            "redirect_uris": [
+                os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:5000/oauth2callback")
+            ]
+        }
+    }
 
 def credentials_to_dict(credentials):
     """Convert Credentials to a dictionary for storage in the session."""
@@ -47,16 +70,30 @@ def credentials_to_dict(credentials):
 
 def get_authorization_url():
     """Generate the authorization URL for Google Fit."""
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-        get_client_secrets_file(), SCOPES)
+    # Get client secrets
+    client_secrets = get_client_secrets()
+
+    # Check if we have valid client secrets
+    if not client_secrets.get('web', {}).get('client_id') or not client_secrets.get('web', {}).get('client_secret'):
+        print("Missing Google client ID or client secret")
+        return None
+
+    # Create a flow instance using client secrets
+    flow = google_auth_oauthlib.flow.Flow.from_client_config(
+        client_secrets, SCOPES)
+
+    # Set the redirect URI
     flow.redirect_uri = url_for('auth.oauth2callback', _external=True)
 
+    # Generate authorization URL
     authorization_url, state = flow.authorization_url(
         access_type='offline',
         include_granted_scopes='true',
         prompt='consent')
 
+    # Store the state in the session
     session['state'] = state
+
     return authorization_url
 
 def get_credentials_from_session():

@@ -21,6 +21,14 @@ class User(db.Model):
     role = db.Column(db.String(50), nullable=False, default='User')
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
+    # Authentication fields
+    is_verified = db.Column(db.Boolean, default=False)
+    verification_token = db.Column(db.String(100))
+    verification_token_expires = db.Column(db.DateTime)
+    reset_token = db.Column(db.String(100))
+    reset_token_expires = db.Column(db.DateTime)
+    last_login = db.Column(db.DateTime)
+
     # User profile information
     name = db.Column(db.String(100))
     age = db.Column(db.Integer)
@@ -28,6 +36,7 @@ class User(db.Model):
     weight_kg = db.Column(db.Float)
     height_cm = db.Column(db.Float)
     activity_level = db.Column(db.String(20), default='moderate')
+    profile_picture = db.Column(db.String(200))  # URL to profile picture
 
     # Diet preferences
     diet_goal = db.Column(db.String(20), default='maintain')  # maintain, lose, gain
@@ -514,3 +523,32 @@ class NotificationDelivery(db.Model):
     # Relationships
     notification = db.relationship('Notification', backref='deliveries', lazy=True)
     device_token = db.relationship('DeviceToken', backref='deliveries', lazy=True)
+
+
+class FitnessData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    date = db.Column(db.Date, default=lambda: datetime.now(timezone.utc).date())
+
+    # Fitness metrics
+    steps = db.Column(db.Integer, default=0)
+    calories_burned = db.Column(db.Integer, default=0)
+    weight_kg = db.Column(db.Float)
+    heart_rate = db.Column(db.Integer)
+    sleep_hours = db.Column(db.Float)
+
+    # Integration status
+    google_fit_connected = db.Column(db.Boolean, default=False)
+    apple_health_connected = db.Column(db.Boolean, default=False)
+    last_sync = db.Column(db.DateTime)
+
+    # Additional metrics
+    height_cm = db.Column(db.Float)
+    bmi = db.Column(db.Float)
+    body_fat_percentage = db.Column(db.Float)
+    water_ml = db.Column(db.Integer)
+    active_minutes = db.Column(db.Integer)
+    distance_km = db.Column(db.Float)
+
+    # Relationship
+    user = db.relationship('User', backref='fitness_data', lazy=True)

@@ -9,6 +9,8 @@ from fitness_api import fitness_bp
 from chatbot_api import chatbot_bp
 from workout_api import workout_bp
 from notifications_api import notifications_bp
+from google_fit_api import google_fit_bp
+from health_ai_engine import health_ai_bp
 from dotenv import load_dotenv
 import os
 
@@ -35,10 +37,17 @@ app.register_blueprint(fitness_bp)
 app.register_blueprint(chatbot_bp)
 app.register_blueprint(workout_bp)
 app.register_blueprint(notifications_bp)
+app.register_blueprint(google_fit_bp, url_prefix='/api/google-fit')
+app.register_blueprint(health_ai_bp, url_prefix='/api/health-ai')
 
 @app.route('/')
 def index():
     return render_template('home.html')
+
+@app.route('/gaming-dashboard')
+def gaming_dashboard():
+    """Render the gaming-style dashboard."""
+    return render_template('gaming_dashboard.html')
 
 @app.route('/protected', methods=['GET'])
 @jwt_required()

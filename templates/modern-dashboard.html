@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitGen 2.0 - Dashboard</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/modern-dashboard.css">
+</head>
+<body>
+    <!-- Header/Navigation -->
+    <header class="dashboard-header">
+        <div class="logo-container">
+            <a href="/" class="logo">
+                <i class="fas fa-dumbbell"></i> FitGen 2.0
+            </a>
+            <div class="logo-tagline">MOVE. STRENGTHEN. THRIVE.</div>
+        </div>
+        
+        <nav class="nav-menu">
+            <a href="/dashboard" class="nav-link">Dashboard</a>
+            <a href="/workouts" class="nav-link">Workouts</a>
+            <a href="/meals" class="nav-link">Meals</a>
+            <a href="/community" class="nav-link">Community</a>
+        </nav>
+        
+        <div class="user-menu">
+            <div>FitGen ai</div>
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Modern Dashboard Layout -->
+    <div class="modern-dashboard">
+        <!-- Daily Progress Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">Daily Progress</h2>
+                <div class="card-link">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+            <!-- Calories Progress -->
+            <div class="progress-container progress-blue">
+                <div class="progress-circle" id="caloriesProgress" data-value="1300" data-max="2200">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="progress-circle-bg" cx="50" cy="50" r="45"></circle>
+                        <circle class="progress-circle-value" cx="50" cy="50" r="45"></circle>
+                    </svg>
+                    <div class="progress-circle-text">
+                        <div class="progress-value">1300</div>
+                        <div class="progress-label">kcal</div>
+                    </div>
+                </div>
+                <div class="progress-goal">2200 goal</div>
+            </div>
+            
+            <!-- Water Progress -->
+            <div class="progress-container progress-cyan">
+                <div class="progress-circle" id="waterProgress" data-value="8" data-max="12">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="progress-circle-bg" cx="50" cy="50" r="45"></circle>
+                        <circle class="progress-circle-value" cx="50" cy="50" r="45"></circle>
+                    </svg>
+                    <div class="progress-circle-text">
+                        <div class="progress-value">8</div>
+                        <div class="progress-label">glasses</div>
+                    </div>
+                </div>
+                <div class="progress-goal">6kta</div>
+            </div>
+            
+            <!-- Mood Progress -->
+            <div class="progress-container progress-yellow">
+                <div class="progress-circle" id="moodProgress" data-value="70" data-max="100">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="progress-circle-bg" cx="50" cy="50" r="45"></circle>
+                        <circle class="progress-circle-value" cx="50" cy="50" r="45"></circle>
+                    </svg>
+                    <div class="progress-circle-text">
+                        <div>
+                            <i class="fas fa-smile" style="font-size: 2rem; color: var(--progress-yellow);"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-goal">Okay</div>
+            </div>
+        </div>
+        
+        <!-- Smart Meal Planner Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">Smart Meal Planner</h2>
+                <div class="card-actions">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+            </div>
+            
+            <div class="meal-tag">Mood Boost</div>
+            
+            <img src="https://images.unsplash.com/photo-1623428187969-5da2dcea5ebf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1064&q=80" alt="Oats and Banana Smoothie" class="meal-image">
+            
+            <h3 class="meal-title">Oats + Banana Smoothie</h3>
+            
+            <div class="meal-calories">
+                <div>450 cal</div>
+                <div>•</div>
+                <div>Energy Refill</div>
+                <div style="margin-left: auto;">
+                    <i class="fas fa-bookmark"></i>
+                </div>
+            </div>
+            
+            <div class="meal-tabs">
+                <div class="meal-tab active">Nutritional Info</div>
+                <div class="meal-tab">
+                    <i class="fas fa-play"></i> Cooking Steps
+                </div>
+            </div>
+            
+            <button class="voice-guide-btn">
+                <i class="fas fa-microphone"></i> Voice guide
+                <i class="fas fa-volume-high" style="margin-left: auto;"></i>
+            </button>
+        </div>
+        
+        <!-- FitGen Assistant Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">FitGen Assistant</h2>
+                <div class="card-actions">
+                    <i class="fas fa-ellipsis-h"></i>
+                </div>
+            </div>
+            
+            <div class="assistant-container">
+                <div id="chatContainer">
+                    <div class="chat-message">
+                        <div class="chat-avatar" style="background-color: #3b82f6;">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="chat-bubble chat-response">
+                            Low mood hai, kya light meal suggest karoge?
+                        </div>
+                    </div>
+                    
+                    <div class="chat-message">
+                        <div class="chat-avatar" style="background-color: #3b82f6;">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="chat-bubble chat-response">
+                            Kaise ho! Aaj soba oats+banana smoothie try karo, simple and nourishin, sahi mood fresh ho 👍 👍
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Type a message">
+                    <div class="send-button" id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Community Leaderboard Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">Community Leaderboard</h2>
+                <div class="card-actions">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+            
+            <div class="leaderboard-tabs">
+                <div class="leaderboard-tab active">Global</div>
+                <div class="leaderboard-tab">Friends</div>
+                <div class="leaderboard-tab" style="margin-left: auto;">
+                    Earn <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+            <div class="leaderboard-item">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Priya" class="leaderboard-avatar">
+                <div class="leaderboard-name">Priya</div>
+                <div class="leaderboard-points">11,250 <span class="leaderboard-unit">pt</span></div>
+            </div>
+            
+            <div class="leaderboard-item">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Aditya" class="leaderboard-avatar">
+                <div class="leaderboard-name">Aditya</div>
+                <div class="leaderboard-points">10,650 <span class="leaderboard-unit">pt</span></div>
+            </div>
+            
+            <div class="leaderboard-item">
+                <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Sunita" class="leaderboard-avatar">
+                <div class="leaderboard-name">Sunita</div>
+                <div class="leaderboard-points">10,600 <span class="leaderboard-unit">pt</span></div>
+            </div>
+            
+            <div class="leaderboard-item">
+                <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Anil" class="leaderboard-avatar">
+                <div class="leaderboard-name">Anil</div>
+                <div class="leaderboard-points">10,400 <span class="leaderboard-unit">pt</span></div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 16px;">
+                <a href="#" style="color: var(--accent-primary); text-decoration: none;">View Achievements</a>
+            </div>
+        </div>
+        
+        <!-- Task Completion Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">Task Completion</h2>
+                <div class="card-actions">
+                    <div style="background-color: var(--accent-primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">1</div>
+                </div>
+            </div>
+            
+            <div class="task-progress">
+                <div class="task-progress-value"></div>
+            </div>
+            
+            <div class="task-count">
+                <div>1 of 5-tasks</div>
+                <div>1ot 5</div>
+            </div>
+        </div>
+        
+        <!-- Real-Time Planner Card -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2 class="card-title">Real-Time Planner</h2>
+                <div class="card-link">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </div>
+            
+            <!-- Content would go here -->
+        </div>
+        
+        <!-- Achievement Notification -->
+        <div class="achievement-card">
+            <div class="achievement-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div class="achievement-text">
+                <div class="achievement-title">Only 100 steps away from a streak!</div>
+                <div class="achievement-subtitle">Keep going!</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Custom JavaScript -->
+    <script src="/static/modern-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitGen 2.0 - Gaming Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='gaming-dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="{{ url_for('static', filename='gaming-dashboard.js') }}" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="gaming-dashboard">
+            <!-- Sidebar Navigation -->
+            <div class="sidebar">
+                <div class="logo">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                
+                <div class="nav-item active" data-section="home">
+                    <i class="fas fa-home"></i>
+                </div>
+                
+                <div class="nav-item" data-section="fitness">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                
+                <div class="nav-item" data-section="diet">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                
+                <div class="nav-item" data-section="workouts">
+                    <i class="fas fa-running"></i>
+                </div>
+                
+                <div class="nav-item" data-section="achievements">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                
+                <div class="nav-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                </div>
+                
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Header -->
+                <div class="dashboard-header">
+                    <div class="header-title">
+                        <h1>FitGen 2.0</h1>
+                        <p class="header-subtitle">Welcome back, <span id="userName">Nikitin</span>!</p>
+                    </div>
+                    
+                    <div class="header-actions">
+                        <button class="action-button primary">
+                            <i class="fas fa-plus"></i> New Workout
+                        </button>
+                        <button class="action-button secondary">
+                            <i class="fas fa-bell"></i> Notifications
+                        </button>
+                        <button class="action-button">
+                            <i class="fas fa-sync-alt"></i> Sync Fitness Data
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Dashboard Content -->
+                <div class="dashboard-content">
+                    <!-- Game Library Section -->
+                    <div class="game-library">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-gamepad section-icon"></i>
+                                Popular Workouts
+                            </h2>
+                            <a href="#" class="view-all">
+                                View All <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </div>
+                        
+                        <div class="game-cards">
+                            <!-- Valorant Card -->
+                            <div class="game-card">
+                                <img src="https://i.imgur.com/JYd6Gj3.png" alt="Valorant" class="game-image">
+                                <div class="game-info">
+                                    <h3 class="game-title">Valorant</h3>
+                                    <p class="game-description">VALORANT is a free-to-play 5v5 tactical shooter game developed by Riot Games.</p>
+                                    <div class="game-meta">
+                                        <div class="game-rating">
+                                            <i class="fas fa-star"></i> 4.5
+                                        </div>
+                                        <div class="game-platform">Standard Pass</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Uncharted 4 Card -->
+                            <div class="game-card">
+                                <img src="https://i.imgur.com/8kCSLmm.png" alt="Uncharted 4" class="game-image">
+                                <div class="game-info">
+                                    <h3 class="game-title">Uncharted 4</h3>
+                                    <p class="game-description">A thief's end is the fourth & final installment in Naughty Dog's Uncharted series.</p>
+                                    <div class="game-meta">
+                                        <div class="game-rating">
+                                            <i class="fas fa-star"></i> 4.8
+                                        </div>
+                                        <div class="game-platform">Premium</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dishonored Card -->
+                            <div class="game-card">
+                                <img src="https://i.imgur.com/JYd6Gj3.png" alt="Dishonored" class="game-image">
+                                <div class="game-info">
+                                    <h3 class="game-title">Dishonored</h3>
+                                    <p class="game-description">Dishonored is an immersive first-person action game that casts you as a supernatural assassin.</p>
+                                    <div class="game-meta">
+                                        <div class="game-rating">
+                                            <i class="fas fa-star"></i> 4.3
+                                        </div>
+                                        <div class="game-platform">Standard</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Red Dead Redemption Card -->
+                            <div class="game-card">
+                                <img src="https://i.imgur.com/8kCSLmm.png" alt="Red Dead Redemption 3" class="game-image">
+                                <div class="game-info">
+                                    <h3 class="game-title">Red Dead Redemption 3</h3>
+                                    <p class="game-description">An epic tale of life in America's unforgiving heartland.</p>
+                                    <div class="game-meta">
+                                        <div class="game-rating">
+                                            <i class="fas fa-star"></i> 4.9
+                                        </div>
+                                        <div class="game-platform">Premium</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Last Downloads Section -->
+                        <div class="last-downloads">
+                            <div class="section-header">
+                                <h2 class="section-title">
+                                    <i class="fas fa-download section-icon"></i>
+                                    Last Downloads
+                                </h2>
+                                <a href="#" class="view-all">
+                                    View All <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                            
+                            <div class="download-item">
+                                <div class="download-icon">
+                                    <img src="https://i.imgur.com/JYd6Gj3.png" alt="FIFA 23">
+                                </div>
+                                <div class="download-info">
+                                    <h3 class="download-name">FIFA 23</h3>
+                                    <div class="download-meta">
+                                        <span>Sports simulator</span>
+                                        <span>•</span>
+                                        <span>1 hour 23 min. ago</span>
+                                    </div>
+                                </div>
+                                <div class="download-actions">
+                                    <button class="download-button">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="download-button">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Statistics Section -->
+                    <div class="user-stats">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                <i class="fas fa-chart-pie section-icon"></i>
+                                Your Statistics
+                            </h2>
+                        </div>
+                        
+                        <div class="stat-circle" data-value="12340" data-max="20000">
+                            <svg width="200" height="200" viewBox="0 0 200 200">
+                                <circle class="circle-bg" cx="100" cy="100" r="80"></circle>
+                                <circle class="circle-progress" cx="100" cy="100" r="80"></circle>
+                            </svg>
+                            <div class="circle-text">
+                                <div class="circle-value">12,340</div>
+                                <div class="circle-label">Hours Played</div>
+                            </div>
+                        </div>
+                        
+                        <ul class="stats-list">
+                            <li class="stat-item" data-stat="downloads">
+                                <div class="stat-label">
+                                    <div class="stat-icon red">
+                                        <i class="fas fa-download"></i>
+                                    </div>
+                                    Downloads
+                                </div>
+                                <div class="stat-value">2,340</div>
+                            </li>
+                            
+                            <li class="stat-item" data-stat="achievements">
+                                <div class="stat-label">
+                                    <div class="stat-icon blue">
+                                        <i class="fas fa-trophy"></i>
+                                    </div>
+                                    Achievements
+                                </div>
+                                <div class="stat-value">5,420</div>
+                            </li>
+                            
+                            <li class="stat-item" data-stat="friends">
+                                <div class="stat-label">
+                                    <div class="stat-icon green">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    Friends
+                                </div>
+                                <div class="stat-value">4,580</div>
+                            </li>
+                            
+                            <li class="stat-item" data-stat="games">
+                                <div class="stat-label">
+                                    <div class="stat-icon orange">
+                                        <i class="fas fa-gamepad"></i>
+                                    </div>
+                                    Games
+                                </div>
+                                <div class="stat-value">142</div>
+                            </li>
+                            
+                            <li class="stat-item" data-stat="reviews">
+                                <div class="stat-label">
+                                    <div class="stat-icon purple">
+                                        <i class="fas fa-comment"></i>
+                                    </div>
+                                    Reviews
+                                </div>
+                                <div class="stat-value">68</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

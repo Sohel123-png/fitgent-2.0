@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  HeartIcon, 
-  FireIcon, 
-  MoonIcon, 
+import {
+  HeartIcon,
+  FireIcon,
+  MoonIcon,
   BeakerIcon,
   TrophyIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
   ClockIcon
 } from '@heroicons/react/24/outline';
+import { healthApi } from '../services/healthApi';
 
 interface HealthMetrics {
   steps: number;
@@ -75,65 +76,57 @@ const HealthDashboard: React.FC = () => {
   const fetchHealthData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
 
-      // Fetch comprehensive health data
-      const healthResponse = await fetch('/api/google-fit/health/comprehensive', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!healthResponse.ok) {
-        throw new Error('Failed to fetch health data');
-      }
-
-      const healthResult = await healthResponse.json();
-
-      // Fetch AI recommendations
-      const recommendationsResponse = await fetch('/api/health-ai/recommendations', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!recommendationsResponse.ok) {
-        throw new Error('Failed to fetch recommendations');
-      }
-
-      const recommendationsResult = await recommendationsResponse.json();
-
-      // Fetch wellness score
-      const wellnessResponse = await fetch('/api/health-ai/wellness-score', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!wellnessResponse.ok) {
-        throw new Error('Failed to fetch wellness score');
-      }
-
-      const wellnessResult = await wellnessResponse.json();
+      // Use healthApi service for all API calls
+      const [healthResult, recommendationsResult, wellnessResult] = await Promise.all([
+        healthApi.getComprehensiveHealthData(),
+        healthApi.getAIRecommendations(),
+        healthApi.getWellnessScore()
+      ]);
 
       // Combine all data
       const combinedData: HealthData = {
-        metrics: healthResult.data.metrics,
-        wellness_score: wellnessResult.wellness_score,
-        recommendations: recommendationsResult.recommendations
+        metrics: healthResult.data?.metrics || {
+          steps: 0,
+          calories_burned: 0,
+          heart_rate_avg: 0,
+          sleep_hours: 0,
+          weight_kg: 0,
+          distance_km: 0,
+          active_minutes: 0,
+          bmi: 0
+        },
+        wellness_score: wellnessResult.data?.wellness_score || {
+          score: 0,
+          max_score: 100,
+          percentage: 0,
+          grade: 'No Data',
+          grade_message: 'Connect your smartwatch to get started',
+          breakdown: {
+            steps: 0,
+            sleep: 0,
+            activity: 0,
+            consistency: 0,
+            heart_health: 0
+          },
+          improvement_areas: []
+        },
+        recommendations: recommendationsResult.data?.recommendations || {
+          hydration: [],
+          movement: [],
+          nutrition: [],
+          sleep: [],
+          stress: [],
+          study_breaks: [],
+          achievements: [],
+          wellness_score: 0
+        }
       };
 
       setHealthData(combinedData);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Failed to load health data. Please check your connection.');
       console.error('Error fetching health data:', err);
     } finally {
       setLoading(false);
@@ -144,26 +137,12 @@ const HealthDashboard: React.FC = () => {
   const syncHealthData = async () => {
     try {
       setSyncStatus('syncing');
-      const token = localStorage.getItem('token');
-      
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
 
-      const response = await fetch('/api/google-fit/health/sync-all', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to sync health data');
-      }
+      // Use healthApi service for sync
+      await healthApi.syncAllHealthSources();
 
       setSyncStatus('success');
-      
+
       // Refresh data after sync
       setTimeout(() => {
         fetchHealthData();
@@ -179,7 +158,7 @@ const HealthDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchHealthData();
-    
+
     // Auto-refresh every 5 minutes
     const interval = setInterval(fetchHealthData, 5 * 60 * 1000);
     return () => clearInterval(interval);
@@ -253,8 +232,8 @@ const HealthDashboard: React.FC = () => {
               onClick={syncHealthData}
               disabled={syncStatus === 'syncing'}
               className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                syncStatus === 'syncing' 
-                  ? 'bg-gray-300 cursor-not-allowed' 
+                syncStatus === 'syncing'
+                  ? 'bg-gray-300 cursor-not-allowed'
                   : syncStatus === 'success'
                   ? 'bg-green-500 text-white'
                   : syncStatus === 'error'
@@ -273,7 +252,7 @@ const HealthDashboard: React.FC = () => {
               {syncStatus === 'error' && <ExclamationTriangleIcon className="w-4 h-4" />}
               {syncStatus === 'idle' && <ClockIcon className="w-4 h-4" />}
               <span>
-                {syncStatus === 'syncing' ? 'Syncing...' : 
+                {syncStatus === 'syncing' ? 'Syncing...' :
                  syncStatus === 'success' ? 'Synced!' :
                  syncStatus === 'error' ? 'Error' : 'Sync Now'}
               </span>
@@ -295,7 +274,7 @@ const HealthDashboard: React.FC = () => {
               <span className="text-gray-500">/ {wellness_score.max_score}</span>
             </div>
           </div>
-          
+
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-medium text-gray-600">{wellness_score.grade}</span>
@@ -313,9 +292,9 @@ const HealthDashboard: React.FC = () => {
               />
             </div>
           </div>
-          
+
           <p className="text-gray-600 mb-4">{wellness_score.grade_message}</p>
-          
+
           {/* Score Breakdown */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {Object.entries(wellness_score.breakdown).map(([key, value]) => (
@@ -424,7 +403,7 @@ const HealthMetricCard: React.FC<HealthMetricCardProps> = ({
           <div className="text-sm text-gray-500">Goal: {goal}</div>
         </div>
       </div>
-      
+
       <div className="mb-2">
         <div className="flex justify-between items-center mb-1">
           <span className="text-sm font-medium text-gray-600">{title}</span>

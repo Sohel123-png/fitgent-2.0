@@ -3,7 +3,10 @@
  * Handles communication with the Flask backend for health data and smartwatch integration
  */
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL ||
+  (process.env.NODE_ENV === 'production'
+    ? 'https://fitgent-backend.onrender.com'
+    : 'http://localhost:5000');
 
 interface ApiResponse<T> {
   success: boolean;
@@ -73,7 +76,7 @@ class HealthApiService {
   }
 
   private async makeRequest<T>(
-    endpoint: string, 
+    endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     try {
@@ -216,7 +219,7 @@ export const healthUtils = {
   getHeartRateZone(heartRate: number, age: number): string {
     const maxHR = 220 - age;
     const percentage = (heartRate / maxHR) * 100;
-    
+
     if (percentage < 50) return 'Resting';
     if (percentage < 60) return 'Fat Burn';
     if (percentage < 70) return 'Aerobic';
@@ -253,7 +256,7 @@ export const healthUtils = {
   formatDuration(minutes: number): string {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    
+
     if (hours > 0) {
       return `${hours}h ${mins}m`;
     }

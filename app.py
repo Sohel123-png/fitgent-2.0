@@ -27,7 +27,15 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'  # For development only
 
 # Initialize extensions
 jwt = JWTManager(app)
-CORS(app)  # Enable CORS for all routes
+# Enable CORS for production deployment
+CORS(app, origins=[
+    "http://localhost:3000",
+    "https://fitgent-2.vercel.app",
+    "https://fitgent-2-0.vercel.app",
+    "https://*.vercel.app",
+    "https://render.com",
+    "https://*.onrender.com"
+], supports_credentials=True)
 
 # Register blueprints
 app.register_blueprint(auth_bp)
@@ -66,4 +74,9 @@ def admin_only():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+
+    # Production vs Development settings
+    port = int(os.environ.get('PORT', 5000))
+    debug_mode = os.environ.get('FLASK_ENV') != 'production'
+
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)
